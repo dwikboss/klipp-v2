@@ -36,6 +36,12 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "459a9846-4576-4c9f-89e2-b7fde881f00b"
+      }
+    },
+    "owner": "dwikboss"
   }
 }

@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 15,
-    borderRadius: 12,
+    borderRadius: 999,
   },
   textStyle: {
     fontFamily: "Montserrat-SemiBold",

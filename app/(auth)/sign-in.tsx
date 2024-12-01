@@ -6,6 +6,7 @@ import {
     KeyboardAvoidingView,
     Platform,
     Keyboard,
+    StyleSheet
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link } from "expo-router";
@@ -32,9 +33,10 @@ const SignIn = () => {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={{ flex: 1 }}
         >
-            <SafeAreaView className="">
+            <SafeAreaView style={ styles.container }>
                 <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-                    <View className="">
+                    <View>
+                        <Text style={styles.title}>Klipp</Text>
                         <Text className="">
                             Log in to Klipp
                         </Text>
@@ -81,5 +83,19 @@ const SignIn = () => {
         </KeyboardAvoidingView>
     );
 };
+
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: 'black', 
+        flexGrow: 1
+    },
+    title: {
+        fontSize: 34,
+        color: "white",
+        textAlign: "start",
+        marginBottom: 10,
+        fontFamily: "MontserratAlternates-Bold",
+    },
+});
 
 export default SignIn;

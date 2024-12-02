@@ -21,7 +21,7 @@ const RegisterLayout = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 25,
+        paddingHorizontal: 25,
         backgroundColor: "black",
     },
 });

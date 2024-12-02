@@ -6,35 +6,56 @@ import {
     Alert,
     KeyboardAvoidingView,
     Platform,
+    AppState,
     Keyboard,
 } from "react-native";
 import { useRouter } from "expo-router";
 import CustomButton from "../../components/CustomButton";
-import FormField from "../../components/FormField"; // Adjust the path if necessary
+import FormField from "../../components/FormField";
+import { supabase } from "../utils/supabase";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+AppState.addEventListener("change", (state) => {
+    if (state === "active") {
+        supabase.auth.startAutoRefresh();
+    } else {
+        supabase.auth.stopAutoRefresh();
+    }
+});
 
 const Onboarding1 = () => {
     const router = useRouter();
 
+    const [loading, setLoading] = useState(false);
+
     const [form, setForm] = useState({
         email: "",
         password: "",
-        confirmPassword: "",
     });
 
-    const handleNextStep = () => {
-        if (form.password !== form.confirmPassword) {
-            Alert.alert("Error", "Passwords do not match.");
-            return;
+    async function signUpWithEmail() {
+        console.log(form.email, form.password);
+        setLoading(true);
+        const {
+            data: { session },
+            error,
+        } = await supabase.auth.signUp({
+            email: form.email,
+            password: form.password,
+        });
+
+        if (error) {
+            Alert.alert(error.message);
+        } else if (!session) {
+            Alert.alert("Please check your inbox for email verification!");
         }
-        // Proceed to next step
-        router.push("/register/onboarding2");
-    };
+        setLoading(false);
+    }
 
     return (
         <SafeAreaView style={styles.container}>
             <Text style={styles.onboardingTitle}>
-                Let's create your Klipp account first!
+                Let's create your account first!
             </Text>
 
             <View style={styles.formContainer}>
@@ -45,28 +66,26 @@ const Onboarding1 = () => {
                     handleChangeText={(value) =>
                         setForm({ ...form, email: value })
                     }
+                    keyboardType="email-address"
                 />
                 <FormField
                     title="Password"
                     value={form.password}
                     placeholder="Enter your password"
-                    secureTextEntry={true}
                     handleChangeText={(value) =>
                         setForm({ ...form, password: value })
                     }
-                />
-                <FormField
-                    title="Confirm Password"
-                    value={form.confirmPassword}
-                    placeholder="Confirm your password"
-                    secureTextEntry={true}
-                    handleChangeText={(value) =>
-                        setForm({ ...form, confirmPassword: value })
-                    }
+                    secureTextEntry
+                    blurOnSubmit={false}
+                    onSubmitEditing={() => Keyboard.dismiss()}
                 />
             </View>
 
-            <CustomButton title="Register account" handlePress={handleNextStep} />
+            <CustomButton
+                title="Create my account"
+                handlePress={signUpWithEmail}
+                disabled={loading}
+            />
         </SafeAreaView>
     );
 };

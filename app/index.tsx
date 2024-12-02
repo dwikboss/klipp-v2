@@ -43,13 +43,13 @@ const Index = () => {
                 <CustomButton
                     title="Create my account"
                     containerStyles={{ width: '100%' }}
-                    handlePress={() => router.push("/sign-in")}
+                    handlePress={() => router.push("/onboarding1")}
                 />
                 <CustomButton
                     title="Already have an account? Click here"
                     containerStyles={{ width: '100%', backgroundColor: 'none'}}
                     textStyles={{ color: 'white', fontFamily: "Montserrat-Regular", fontSize: 14 }}
-                    handlePress={() => router.push("/sign-in")}
+                    handlePress={() => router.push("register/onboarding1")}
                 />
             </View>
         </SafeAreaView>

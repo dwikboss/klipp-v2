@@ -9,7 +9,7 @@ const CustomButton = ({ title, handlePress, containerStyles, textStyles, isLoadi
       style={[styles.buttonStyle, containerStyles]}
       disabled={isLoading}
     >
-      <Text style={[styles.textStyle, textStyles]}>{title}</Text> {}
+      <Text style={[styles.textStyle, textStyles]}>{title}</Text>
     </TouchableOpacity>
   );
 };

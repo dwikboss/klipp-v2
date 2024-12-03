@@ -12,7 +12,7 @@ import {
 import { useRouter } from "expo-router";
 import CustomButton from "../../components/CustomButton";
 import FormField from "../../components/FormField";
-import { supabase } from "../utils/supabase";
+import { supabase } from "../../utils/supabase";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 AppState.addEventListener("change", (state) => {

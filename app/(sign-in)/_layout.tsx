@@ -12,28 +12,24 @@ import { Stack, Slot } from "expo-router";
 
 const AuthLayout = () => {
     return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={styles.container}
-        >
-            <SafeAreaView>
-                <Slot/>
-            </SafeAreaView>
-        </KeyboardAvoidingView>
+        <SafeAreaView style={styles.container}>
+            <Stack>
+                <Stack.Screen
+                    name="sign-in"
+                    options={{
+                        headerShown: false,
+                    }}
+                />
+            </Stack>
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: "red",
         flex: 1,
-    },
-    title: {
-        fontSize: 34,
-        color: "white",
-        textAlign: "flex-start",
-        marginBottom: 10,
-        fontFamily: "MontserratAlternates-Bold",
+        padding: 25,
+        backgroundColor: "black",
     },
 });
 

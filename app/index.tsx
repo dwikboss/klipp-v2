@@ -1,7 +1,8 @@
-import { Text, View, StyleSheet, Image } from "react-native";
+import { Text, View, StyleSheet, Image, Platform } from "react-native";
 import { router, Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "../components/CustomButton";
+import Auth from "../components/auth/Auth";
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
@@ -40,17 +41,7 @@ const Index = () => {
             </View>
 
             <View style={styles.bottomSection}>
-                <CustomButton
-                    title="Create my account"
-                    containerStyles={{ width: '100%' }}
-                    handlePress={() => router.push("/onboarding1")}
-                />
-                <CustomButton
-                    title="Already have an account? Click here"
-                    containerStyles={{ width: '100%', backgroundColor: 'none'}}
-                    textStyles={{ color: 'white', fontFamily: "Montserrat-Regular", fontSize: 14 }}
-                    handlePress={() => router.push("register/onboarding1")}
-                />
+                <Auth />
             </View>
         </SafeAreaView>
     );

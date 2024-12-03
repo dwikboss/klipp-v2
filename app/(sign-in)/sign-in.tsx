@@ -11,37 +11,34 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link } from "expo-router";
 import { useRouter } from "expo-router";
-import FormField from "../../../components/FormField";
-import CustomButton from "../../../components/CustomButton";
+import FormField from "../../components/FormField";
+import CustomButton from "../../components/CustomButton";
+import PhoneAuth from "../../components/auth/PhoneAuth";
 
 const SignIn = () => {
-    const router = useRouter();
-
-    const [form, setForm] = useState({
-        email: "",
-        password: "",
-    });
-
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const submit = () => {
-        router.replace("/(tabs)/home");
-    };
-
-    return <Text style={{ color: 'white', fontSize: 24 }}>Log in to Klipp</Text>;
+    return (
+        <View style={styles.container}>
+            <View style={styles.formContainer}>
+                {/* <PhoneAuth /> */}
+            </View>
+        </View>
+    );
 };
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         backgroundColor: "black",
-        flexGrow: 1,
+        paddingTop: 24
     },
-    title: {
-        fontSize: 34,
+    onboardingTitle: {
         color: "white",
-        textAlign: "flex-start",
-        marginBottom: 10,
-        fontFamily: "MontserratAlternates-Bold",
+        fontSize: 24,
+        fontFamily: "Montserrat-SemiBold",
+        marginBottom: 30,
+    },
+    formContainer: {
+        marginBottom: 30,
     },
 });
 

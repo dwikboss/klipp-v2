@@ -1,5 +1,5 @@
 import { Text, View, StyleSheet, Image, Platform } from "react-native";
-import { router, Link } from "expo-router";
+import { router, Link, Redirect  } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "../components/CustomButton";
 import Auth from "../components/auth/Auth";
@@ -9,16 +9,19 @@ import Animated, {
     withTiming,
     withRepeat,
 } from "react-native-reanimated";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { supabase } from "../utils/supabase";
+import { SessionContext } from "../contexts/SessionContext";
 
 const Index = () => {
     const offset = useSharedValue(75 / 2 - 25);
+    const session = useContext(SessionContext);
 
     const animatedStyles = useAnimatedStyle(() => ({
         transform: [{ translateY: offset.value }],
     }));
 
-    React.useEffect(() => {
+    useEffect(() => {
         offset.value = withRepeat(
             withTiming(-offset.value, { duration: 3000 }),
             -1,
@@ -26,25 +29,29 @@ const Index = () => {
         );
     }, []);
 
-    return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.topSection}>
-                <Text style={styles.title}>Klipp</Text>
-                <Text style={styles.subtitle}>Collect your friends</Text>
-                <Animated.View style={animatedStyles}>
-                    <Image
-                        style={{height: '90%'}}
-                        source={require("../assets/images/home.png")}
-                        resizeMode="contain"
-                    />
-                </Animated.View>
-            </View>
+    if (!session) {
+        return (
+            <SafeAreaView style={styles.container}>
+                <View style={styles.topSection}>
+                    <Text style={styles.title}>Klipp</Text>
+                    <Text style={styles.subtitle}>Collect your friends</Text>
+                    <Animated.View style={animatedStyles}>
+                        <Image
+                            style={{ height: "90%" }}
+                            source={require("../assets/images/home.png")}
+                            resizeMode="contain"
+                        />
+                    </Animated.View>
+                </View>
 
-            <View style={styles.bottomSection}>
-                <Auth />
-            </View>
-        </SafeAreaView>
-    );
+                <View style={styles.bottomSection}>
+                    <Auth />
+                </View>
+            </SafeAreaView>
+        );
+    } else {
+        return <Redirect href="/onboarding1" />;
+    }
 };
 
 const styles = StyleSheet.create({

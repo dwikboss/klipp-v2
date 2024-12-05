@@ -10,9 +10,9 @@ import {
     Keyboard,
 } from "react-native";
 import { useRouter } from "expo-router";
-import CustomButton from "../../components/CustomButton";
-import FormField from "../../components/FormField";
-import { supabase } from "../../utils/supabase";
+import CustomButton from "../../../components/CustomButton";
+import FormField from "../../../components/FormField";
+import { supabase } from "../../../utils/supabase";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 AppState.addEventListener("change", (state) => {
@@ -23,7 +23,7 @@ AppState.addEventListener("change", (state) => {
     }
 });
 
-const Onboarding1 = () => {
+const Onboarding2 = () => {
     const router = useRouter();
 
     const [loading, setLoading] = useState(false);
@@ -54,30 +54,21 @@ const Onboarding1 = () => {
 
     return (
         <SafeAreaView style={styles.container}>
+            <Text style={styles.onboardingSubtitle}>
+                Pick a cool username!
+            </Text>
             <Text style={styles.onboardingTitle}>
-                Let's create your account first!
+                Pick a cool username!
             </Text>
 
             <View style={styles.formContainer}>
                 <FormField
                     title="Email"
                     value={form.email}
-                    placeholder="Enter your email"
+                    placeholder="Your name"
                     handleChangeText={(value) =>
                         setForm({ ...form, email: value })
                     }
-                    keyboardType="email-address"
-                />
-                <FormField
-                    title="Password"
-                    value={form.password}
-                    placeholder="Enter your password"
-                    handleChangeText={(value) =>
-                        setForm({ ...form, password: value })
-                    }
-                    secureTextEntry
-                    blurOnSubmit={false}
-                    onSubmitEditing={() => Keyboard.dismiss()}
                 />
             </View>
 
@@ -94,6 +85,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "black",
+        alignItems: "center",
     },
     onboardingTitle: {
         color: "white",
@@ -101,9 +93,14 @@ const styles = StyleSheet.create({
         fontFamily: "Montserrat-SemiBold",
         marginBottom: 30,
     },
+    onboardingSubtitle: {
+        color: "white",
+        fontSize: 16,
+        fontFamily: "Montserrat-Regular",
+    },
     formContainer: {
         marginBottom: 30,
     },
 });
 
-export default Onboarding1;
+export default Onboarding2;

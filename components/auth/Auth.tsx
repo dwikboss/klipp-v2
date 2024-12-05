@@ -36,12 +36,12 @@ const Auth = () => {
                                     provider: "apple",
                                     token: credential.identityToken,
                                 });
-                                console.log(
-                                    JSON.stringify({ error, user }, null, 2)
-                                );
+                                // console.log(
+                                //     JSON.stringify({ error, user }, null, 2)
+                                // );
                                 if (!error) {
-                                    console.log('authorized');
-                                    router.push("/onboarding1")
+                                    router.replace('/onboarding1');
+                                    console.log("User signed in successfully");
                                 }
                             } else {
                                 throw new Error("No identityToken.");

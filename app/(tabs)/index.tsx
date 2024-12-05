@@ -1,8 +1,18 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  AppState,
+  Keyboard,
+} from "react-native";
 
 export default function HomeScreen() {
   return (
-    <></>
+      <View>
+        <Text>Hi!</Text>
+      </View>
   );
 }
 

@@ -36,19 +36,34 @@ const Auth = () => {
                                     provider: "apple",
                                     token: credential.identityToken,
                                 });
-                                // console.log(
-                                //     JSON.stringify({ error, user }, null, 2)
-                                // );
+
                                 if (!error) {
-                                    router.replace('/onboarding1');
-                                    console.log("User signed in successfully");
+                                    const { data: profile, error: profileError } = await supabase
+                                        .from("profiles")
+                                        .select("updated_at")
+                                        .eq("id", user?.id)
+                                        .single();
+
+                                    if (profileError) {
+                                        console.error("Error fetching profile:", profileError);
+                                        throw profileError;
+                                    }
+
+                                    if (profile?.updated_at) {
+                                        // router.replace("/onboarding1");
+                                        console.log("user is not new");
+                                    } else {
+                                        console.log("user is new!");
+                                    }
                                 }
                             } else {
                                 throw new Error("No identityToken.");
                             }
                         } catch (e) {
                             if (e.code === "ERR_REQUEST_CANCELED") {
+                                console.log("Request canceled");
                             } else {
+                                console.error("Error during sign-in:", e);
                             }
                         }
                     }}

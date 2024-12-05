@@ -29,6 +29,12 @@ const Index = () => {
         );
     }, []);
 
+    // async function signOut() {
+    //     const { error } = await supabase.auth.signOut()
+    // }
+
+    // signOut();
+
     if (!session) {
         return (
             <SafeAreaView style={styles.container}>
@@ -50,6 +56,7 @@ const Index = () => {
             </SafeAreaView>
         );
     } else {
+        console.log(session);
         return <Redirect href="/onboarding1" />;
     }
 };

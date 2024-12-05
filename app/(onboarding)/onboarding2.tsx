@@ -4,24 +4,15 @@ import {
     Text,
     StyleSheet,
     Alert,
-    KeyboardAvoidingView,
+    ScrollView,
     Platform,
     AppState,
     Keyboard,
 } from "react-native";
 import { useRouter } from "expo-router";
-import CustomButton from "../../../components/CustomButton";
-import FormField from "../../../components/FormField";
-import { supabase } from "../../../utils/supabase";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-AppState.addEventListener("change", (state) => {
-    if (state === "active") {
-        supabase.auth.startAutoRefresh();
-    } else {
-        supabase.auth.stopAutoRefresh();
-    }
-});
+import CustomButton from "../../components/CustomButton";
+import FormField from "../../components/FormField";
 
 const Onboarding2 = () => {
     const router = useRouter();
@@ -29,55 +20,28 @@ const Onboarding2 = () => {
     const [loading, setLoading] = useState(false);
 
     const [form, setForm] = useState({
-        email: "",
-        password: "",
+        username: "",
     });
 
-    async function signUpWithEmail() {
-        console.log(form.email, form.password);
-        setLoading(true);
-        const {
-            data: { session },
-            error,
-        } = await supabase.auth.signUp({
-            email: form.email,
-            password: form.password,
-        });
-
-        if (error) {
-            Alert.alert(error.message);
-        } else if (!session) {
-            Alert.alert("Please check your inbox for email verification!");
-        }
-        setLoading(false);
-    }
-
     return (
-        <SafeAreaView style={styles.container}>
-            <Text style={styles.onboardingSubtitle}>
-                Pick a cool username!
-            </Text>
-            <Text style={styles.onboardingTitle}>
-                Pick a cool username!
-            </Text>
-
+        <View style={styles.container}>
             <View style={styles.formContainer}>
-                <FormField
-                    title="Email"
-                    value={form.email}
-                    placeholder="Your name"
-                    handleChangeText={(value) =>
-                        setForm({ ...form, email: value })
-                    }
-                />
+                <Text style={styles.onboardingMainBodyText}>
+                    Pick a username
+                </Text>
+                <FormField placeholder="Your name" />
             </View>
 
-            <CustomButton
-                title="Create my account"
-                handlePress={signUpWithEmail}
-                disabled={loading}
-            />
-        </SafeAreaView>
+            <View style={{ width: "100%" }}>
+                <Text style={styles.onboardingSubtitle}>
+                    Don't worry. You will be able to change your username later.
+                </Text>
+                <CustomButton
+                    title="Create my account"
+                    containerStyles={{ width: "100%" }}
+                />
+            </View>
+        </View>
     );
 };
 
@@ -86,20 +50,26 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "black",
         alignItems: "center",
+        justifyContent: "space-between",
+        height: "100%",
+        paddingTop: 75,
     },
-    onboardingTitle: {
+    onboardingMainBodyText: {
         color: "white",
         fontSize: 24,
         fontFamily: "Montserrat-SemiBold",
-        marginBottom: 30,
+        textAlign: "center",
     },
     onboardingSubtitle: {
-        color: "white",
-        fontSize: 16,
+        color: "#545454",
+        fontSize: 14,
+        textAlign: "center",
+        marginBottom: 20,
         fontFamily: "Montserrat-Regular",
     },
     formContainer: {
         marginBottom: 30,
+        width: "100%",
     },
 });
 

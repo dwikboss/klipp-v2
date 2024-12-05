@@ -1,32 +1,25 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import {
     View,
     Text,
     StyleSheet,
-    KeyboardAvoidingView,
     Platform,
-    AppState,
     Keyboard,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { SessionContext } from "../../contexts/SessionContext";
 import CustomButton from "../../components/CustomButton";
 
 const Onboarding1 = () => {
     const router = useRouter();
-    const session = useContext(SessionContext);
-    
-    return (
-        <SafeAreaView style={styles.container}>
-            <Text style={styles.onboardingSubtitle}>
-                Let's setup your Klipp profile!
-            </Text>
 
-            <CustomButton
-                title="Create my account"
-            />
-        </SafeAreaView>
+    return (
+        <View style={styles.container}>
+            <Text style={styles.onboardingMainBodyText}>
+                Let's setup your Klipp profile
+            </Text>
+            <CustomButton title="Let's go!" containerStyles={{ width: "100%" }} handlePress={() => router.push("/onboarding2")}/>
+        </View>
     );
 };
 
@@ -35,17 +28,20 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "black",
         alignItems: "center",
+        justifyContent: "space-between",
+        paddingTop: 75,
     },
-    onboardingTitle: {
+    onboardingMainBodyText: {
         color: "white",
-        fontSize: 24,
-        fontFamily: "Montserrat-SemiBold",
-        marginBottom: 30,
+        fontSize: 48,
+        fontFamily: "Montserrat-Bold",
+        textAlign: "center",
     },
     onboardingSubtitle: {
         color: "white",
-        fontSize: 16,
-        fontFamily: "Montserrat-Regular",
+        fontSize: 32,
+        fontFamily: "Montserrat-Bold",
+        marginBottom: 25,
     },
     formContainer: {
         marginBottom: 30,

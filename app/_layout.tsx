@@ -4,15 +4,23 @@ import {
     ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Slot } from "expo-router";
+import { Slot, Redirect } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { React, useEffect, useState } from "react";
 import { supabase } from "../utils/supabase";
 import { SessionContext } from "../contexts/SessionContext";
 import "react-native-reanimated";
-import { Text, View } from "react-native";
+import { Text, View, AppState } from "react-native";
 import { Session } from "@supabase/supabase-js";
 import * as SplashScreen from "expo-splash-screen";
+
+AppState.addEventListener("change", (state) => {
+    if (state === "active") {
+        supabase.auth.startAutoRefresh();
+    } else {
+        supabase.auth.stopAutoRefresh();
+    }
+});
 
 export default function RootLayout() {
     const [session, setSession] = useState<Session | null>(null);

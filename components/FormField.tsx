@@ -14,17 +14,19 @@ const FormField = ({
     handleChangeText,
     keyboardType,
     secureTextEntry = false,
+    customTextStyle,
     ...props
 }) => {
     const [showPassword, setShowPassword] = useState(false);
 
     return (
-        <View style={styles.inputContainer }>
+        <View style={styles.inputContainer}>
             <TextInput
                 style={styles.inputStyle}
                 value={value}
                 placeholder={placeholder}
-                placeholderTextColor="##1f1f1f"
+                placeholderTextColor="#1f1f1f"
+                placeHolder="#1f1f1f"
                 onChangeText={handleChangeText}
                 keyboardType={keyboardType}
                 secureTextEntry={secureTextEntry && !showPassword}
@@ -49,12 +51,14 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginBottom: 15,
         paddingVertical: 15,
+        backgroundColor: "black",
     },
     inputStyle: {
         flex: 1,
         color: "white",
-        fontFamily: "Montserrat-Regular",
-        fontSize: 32
+        fontFamily: "Montserrat-Bold",
+        textAlign: "center",
+        fontSize: 48
     },
     toggleButton: {
         marginLeft: 10,

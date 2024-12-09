@@ -10,8 +10,8 @@ import {
 
 export default function HomeScreen() {
   return (
-      <View>
-        <Text>Hi!</Text>
+      <View style={{ backgroundColor: "red" }}>
+        <Text>Hi!dasdasdasdads</Text>
       </View>
   );
 }

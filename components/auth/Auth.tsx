@@ -50,7 +50,7 @@ const Auth = () => {
                                     }
 
                                     if (profile?.updated_at) {
-                                        // router.replace("/onboarding1");
+                                        router.replace("/home");
                                         console.log("user is not new");
                                     } else {
                                         console.log("user is new!");

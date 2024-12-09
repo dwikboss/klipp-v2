@@ -3,44 +3,47 @@ import {
     View,
     Text,
     StyleSheet,
-    Alert,
-    ScrollView,
-    Platform,
-    AppState,
-    Keyboard,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
-import CustomButton from "../../components/CustomButton";
-import FormField from "../../components/FormField";
 import { useOnboarding } from "../../contexts/OnboardingContext";
+import CustomButton from "../../components/CustomButton";
+import ImageUpload from "../../components/ImageUpload";
+import * as ImagePicker from "expo-image-picker";
 
-const Onboarding2 = () => {
+const Onboarding3 = () => {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
 
     const { data, setData } = useOnboarding();
 
+    const handleInputChange = (text: string) => {
+        setData({ username: text });
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.formContainer}>
-                <Text style={styles.onboardingMainBodyText}>
-                    Pick a username
+                <Text style={styles.onboardingSubtitle}>
+                    Annyeong {data.username}!
                 </Text>
-                <FormField
-                    placeholder="Your name"
-                    handleChangeText={(e) => setData({ username: e })}
+                <Text style={styles.onboardingMainBodyText}>
+                    Upload a profile picture
+                </Text>
+                <ImageUpload
+                    containerStyle={{
+                        width: 150,
+                        height: 150,
+                        borderRadius: 999,
+                    }}
+                    imageStyle={{ borderRadius: 999 }}
                 />
             </View>
 
             <View style={{ width: "100%" }}>
-                <Text style={styles.onboardingSubtitle}>
-                    Don't worry. You will be able to change your username later.
-                </Text>
                 <CustomButton
                     title="Continue"
                     containerStyles={{ width: "100%" }}
-                    handlePress={() => router.push("/onboarding3")}
+                    handlePress={() => router.push("/onboarding4")}
                 />
             </View>
         </View>
@@ -57,23 +60,26 @@ const styles = StyleSheet.create({
         paddingTop: 75,
         paddingHorizontal: 25,
     },
-    onboardingMainBodyText: {
+    onboardingSubtitle: {
         color: "white",
         fontSize: 24,
+        textAlign: "center",
         fontFamily: "Montserrat-SemiBold",
-        textAlign: "center",
+        marginBottom: 20
     },
-    onboardingSubtitle: {
-        color: "#545454",
-        fontSize: 14,
+    onboardingMainBodyText: {
+        color: "white",
+        fontSize: 38,
+        fontFamily: "Montserrat-Bold",
         textAlign: "center",
-        marginBottom: 20,
-        fontFamily: "Montserrat-Regular",
+        marginBottom: 50
     },
     formContainer: {
         marginBottom: 30,
         width: "100%",
+        justifyContent: "center",
+        alignItems: "center",
     },
 });
 
-export default Onboarding2;
+export default Onboarding3;

@@ -1,5 +1,5 @@
 import { Text, View, StyleSheet, Image, Platform } from "react-native";
-import { router, Link, Redirect  } from "expo-router";
+import { router, Link, Redirect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "../components/CustomButton";
 import Auth from "../components/auth/Auth";
@@ -17,6 +17,9 @@ const Index = () => {
     const offset = useSharedValue(75 / 2 - 25);
     const session = useContext(SessionContext);
 
+    const [profileUpdatedAt, setProfileUpdatedAt] = useState(null);
+    const [loading, setLoading] = useState(true);
+
     const animatedStyles = useAnimatedStyle(() => ({
         transform: [{ translateY: offset.value }],
     }));
@@ -29,36 +32,66 @@ const Index = () => {
         );
     }, []);
 
-    // async function signOut() {
-    //     const { error } = await supabase.auth.signOut()
-    // }
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const { data: profile, error } = await supabase
+                    .from("profiles")
+                    .select("updated_at")
+                    .eq("id", session?.user?.id)
+                    .single();
 
-    // signOut();
+                if (error) {
+                    console.error("Error fetching profile:", error);
+                    return;
+                }
 
-    if (!session) {
+                setProfileUpdatedAt(profile?.updated_at);
+            } catch (error) {
+                console.error("Unexpected error:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (session?.user?.id) {
+            fetchProfile();
+        } else {
+            setLoading(false);
+        }
+    }, [session?.user?.id]);
+
+    if (loading) {
         return (
             <SafeAreaView style={styles.container}>
-                <View style={styles.topSection}>
-                    <Text style={styles.title}>Klipp</Text>
-                    <Text style={styles.subtitle}>Collect your friends</Text>
-                    <Animated.View style={animatedStyles}>
-                        <Image
-                            style={{ height: "90%" }}
-                            source={require("../assets/images/home.png")}
-                            resizeMode="contain"
-                        />
-                    </Animated.View>
-                </View>
-
-                <View style={styles.bottomSection}>
-                    <Auth />
-                </View>
+                <Text>Loading...</Text>
             </SafeAreaView>
         );
-    } else {
-        console.log(session);
-        return <Redirect href="/onboarding1" />;
     }
+
+    if (profileUpdatedAt) {
+        return <Redirect href="/home" />;
+    }
+
+    return (
+        <SafeAreaView style={styles.container}>
+            <View style={styles.topSection}>
+                <Text style={styles.title}>Klipp</Text>
+                <Text style={styles.subtitle}>Collect your friends</Text>
+                <Animated.View style={animatedStyles}>
+                    <Image
+                        style={{ height: "90%" }}
+                        source={require("../assets/images/home.png")}
+                        resizeMode="contain"
+                    />
+                </Animated.View>
+            </View>
+
+            <View style={styles.bottomSection}>
+                <Auth />
+            </View>
+        </SafeAreaView>
+    );
 };
 
 const styles = StyleSheet.create({

@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-between",
         paddingTop: 75,
+        paddingHorizontal: 25,
     },
     onboardingMainBodyText: {
         color: "white",

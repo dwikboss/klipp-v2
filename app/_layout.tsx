@@ -24,6 +24,7 @@ AppState.addEventListener("change", (state) => {
 
 export default function RootLayout() {
     const [session, setSession] = useState<Session | null>(null);
+
     const [fontsLoaded, error] = useFonts({
         "Montserrat-Black": require("../assets/fonts/Montserrat-Black.ttf"),
         "Montserrat-BlackItalic": require("../assets/fonts/Montserrat-BlackItalic.ttf"),

@@ -14,8 +14,6 @@ import { AppState } from "react-native";
 import { Session } from "@supabase/supabase-js";
 import * as SplashScreen from "expo-splash-screen";
 
-SplashScreen.preventAutoHideAsync();
-
 AppState.addEventListener("change", (state) => {
     if (state === "active") {
         supabase.auth.startAutoRefresh();
@@ -66,38 +64,25 @@ export default function RootLayout() {
     });
 
     const router = useRouter();
+    // async function signOut() {
+    //     const { error } = await supabase.auth.signOut();
+    // }
+    // signOut();
 
     useEffect(() => {
-        const initializeSession = async () => {
-            const {
-                data: { session },
-            } = await supabase.auth.getSession();
+        if (error) throw error;
+        supabase.auth.getSession().then(({ data: { session } }) => {
             setSession(session);
+        });
 
-            if (!session) {
-                router.replace("/");
-            } else {
-                SplashScreen.hideAsync();
-            }
-        };
-
-        initializeSession();
-
-        const { data: subscription } = supabase.auth.onAuthStateChange(
-            (_event, session) => {
-                setSession(session);
-                if (!session) {
-                    router.replace("/");
-                }
-            }
-        );
-
-        return () => subscription.subscription.unsubscribe();
+        supabase.auth.onAuthStateChange((_event, session) => {
+            setSession(session);
+        });
     }, [router]);
 
     useEffect(() => {
         if (error) throw error;
-    }, [error]);
+    }, [fontsLoaded, error]);
 
     if (!fontsLoaded) {
         return null;

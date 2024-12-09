@@ -94,32 +94,43 @@ const Index = () => {
 };
 
 const styles = StyleSheet.create({
+    animatedStyles: {
+        height: 250,
+        width: 250,
+        borderRadius: 20,
+    },
     container: {
         flex: 1,
-        justifyContent: "space-between",
-        paddingHorizontal: 20,
-        backgroundColor: "#fff",
+        backgroundColor: "black",
     },
     topSection: {
-        flex: 1,
+        flex: 8,
+        justifyContent: "flex-start",
         alignItems: "center",
-        justifyContent: "center",
-    },
-    title: {
-        fontSize: 32,
-        fontWeight: "bold",
-        marginBottom: 10,
-    },
-    subtitle: {
-        fontSize: 16,
-        color: "#555",
-        marginBottom: 30,
+        paddingTop: 16,
     },
     bottomSection: {
-        flex: 0.5,
-        justifyContent: "flex-end",
+        flex: 2,
+        justifyContent: "center",
         alignItems: "center",
+        paddingLeft: 25,
+        paddingRight: 25,
+    },
+    title: {
+        fontSize: 56,
+        color: "white",
+        textAlign: "center",
+        marginBottom: 10,
+        fontFamily: "MontserratAlternates-Bold",
+    },
+    subtitle: {
+        fontSize: 20,
+        color: "white",
+        textAlign: "center",
+        marginBottom: 30,
+        fontFamily: "Montserrat-Regular",
     },
 });
+
 
 export default Index;

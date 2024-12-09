@@ -1,42 +1,45 @@
 import React, { useEffect } from "react";
+import { StyleSheet, Text } from "react-native";
 import { Stack, useRouter } from "expo-router";
-import { supabase } from "../../utils/supabase";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useSession } from "../../contexts/SessionContext";
 
-export default function TabLayout() {
+export default function AppLayout() {
     const router = useRouter();
+    const session = useSession();
 
     useEffect(() => {
-        const checkSession = async () => {
-            const {
-                data: { session },
-            } = await supabase.auth.getSession();
-
-            if (!session) {
-                router.replace("/");
-            }
-        };
-
-        checkSession();
-
-        const { data: subscription } = supabase.auth.onAuthStateChange(
-            (_event, session) => {
-                if (!session) {
-                    router.replace("/");
-                }
-            }
-        );
-
-        return () => subscription.subscription.unsubscribe();
-    }, [router]);
+        if (!session) {
+            router.replace("/");
+        }
+    }, [session, router]);
 
     return (
-        <Stack>
-            <Stack.Screen
-                name="home"
-                options={{
-                    headerShown: false,
-                }}
-            />
-        </Stack>
+        <SafeAreaView style={styles.containerStyle}>
+            <Text style={styles.title}>Klipp</Text>
+            <Stack>
+                <Stack.Screen
+                    name="home"
+                    options={{
+                        headerShown: false,
+                    }}
+                />
+            </Stack>
+        </SafeAreaView>
     );
 }
+
+const styles = StyleSheet.create({
+    containerStyle: {
+        backgroundColor: "black",
+        flex: 1,
+        paddingBottom: 25,
+    },
+    title: {
+        fontSize: 24,
+        color: "white",
+        textAlign: "center",
+        marginTop: 10,
+        fontFamily: "MontserratAlternates-Bold",
+    },
+});

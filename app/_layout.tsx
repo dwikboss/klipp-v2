@@ -4,15 +4,17 @@ import {
     ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Slot, Redirect } from "expo-router";
+import { Slot, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { React, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { supabase } from "../utils/supabase";
-import { SessionContext } from "../contexts/SessionContext";
+import { SessionProvider } from "../contexts/SessionContext";
 import "react-native-reanimated";
-import { Text, View, AppState } from "react-native";
+import { AppState } from "react-native";
 import { Session } from "@supabase/supabase-js";
 import * as SplashScreen from "expo-splash-screen";
+
+SplashScreen.preventAutoHideAsync();
 
 AppState.addEventListener("change", (state) => {
     if (state === "active") {
@@ -24,7 +26,6 @@ AppState.addEventListener("change", (state) => {
 
 export default function RootLayout() {
     const [session, setSession] = useState<Session | null>(null);
-
     const [fontsLoaded, error] = useFonts({
         "Montserrat-Black": require("../assets/fonts/Montserrat-Black.ttf"),
         "Montserrat-BlackItalic": require("../assets/fonts/Montserrat-BlackItalic.ttf"),
@@ -64,24 +65,47 @@ export default function RootLayout() {
         "MontserratAlternates-ThinItalic": require("../assets/fonts/MontserratAlternates-ThinItalic.ttf"),
     });
 
+    const router = useRouter();
+
+    useEffect(() => {
+        const initializeSession = async () => {
+            const {
+                data: { session },
+            } = await supabase.auth.getSession();
+            setSession(session);
+
+            if (!session) {
+                router.replace("/");
+            } else {
+                SplashScreen.hideAsync();
+            }
+        };
+
+        initializeSession();
+
+        const { data: subscription } = supabase.auth.onAuthStateChange(
+            (_event, session) => {
+                setSession(session);
+                if (!session) {
+                    router.replace("/");
+                }
+            }
+        );
+
+        return () => subscription.subscription.unsubscribe();
+    }, [router]);
+
     useEffect(() => {
         if (error) throw error;
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setSession(session);
-        });
-
-        supabase.auth.onAuthStateChange((_event, session) => {
-            setSession(session);
-        });
-    }, [fontsLoaded, error]);
+    }, [error]);
 
     if (!fontsLoaded) {
         return null;
     }
 
     return (
-        <SessionContext.Provider value={session}>
+        <SessionProvider session={session}>
             <Slot />
-        </SessionContext.Provider>
+        </SessionProvider>
     );
 }

@@ -1,22 +1,20 @@
-import { Text, View, StyleSheet, Image, Platform } from "react-native";
-import { router, Link, Redirect } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { Text, View, StyleSheet, Image } from "react-native";
+import { Redirect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import CustomButton from "../components/CustomButton";
-import Auth from "../components/auth/Auth";
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
     withTiming,
     withRepeat,
 } from "react-native-reanimated";
-import React, { useEffect, useState, useContext } from "react";
 import { supabase } from "../utils/supabase";
-import { SessionContext } from "../contexts/SessionContext";
+import { useSession } from "../contexts/SessionContext";
+import Auth from "../components/auth/Auth";
 
 const Index = () => {
     const offset = useSharedValue(75 / 2 - 25);
-    const session = useContext(SessionContext);
-
+    const session = useSession();
     const [profileUpdatedAt, setProfileUpdatedAt] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -35,10 +33,15 @@ const Index = () => {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
+                if (!session?.user?.id) {
+                    setLoading(false);
+                    return;
+                }
+
                 const { data: profile, error } = await supabase
                     .from("profiles")
                     .select("updated_at")
-                    .eq("id", session?.user?.id)
+                    .eq("id", session.user.id)
                     .single();
 
                 if (error) {
@@ -54,12 +57,8 @@ const Index = () => {
             }
         };
 
-        if (session?.user?.id) {
-            fetchProfile();
-        } else {
-            setLoading(false);
-        }
-    }, [session?.user?.id]);
+        fetchProfile();
+    }, [session]);
 
     if (loading) {
         return (
@@ -95,41 +94,31 @@ const Index = () => {
 };
 
 const styles = StyleSheet.create({
-    animatedStyles: {
-        height: 250,
-        width: 250,
-        borderRadius: 20,
-    },
     container: {
         flex: 1,
-        backgroundColor: "black",
+        justifyContent: "space-between",
+        paddingHorizontal: 20,
+        backgroundColor: "#fff",
     },
     topSection: {
-        flex: 8,
-        justifyContent: "flex-start",
+        flex: 1,
         alignItems: "center",
-        paddingTop: 16,
-    },
-    bottomSection: {
-        flex: 2,
         justifyContent: "center",
-        alignItems: "center",
-        paddingLeft: 25,
-        paddingRight: 25,
     },
     title: {
-        fontSize: 56,
-        color: "white",
-        textAlign: "center",
+        fontSize: 32,
+        fontWeight: "bold",
         marginBottom: 10,
-        fontFamily: "MontserratAlternates-Bold",
     },
     subtitle: {
-        fontSize: 20,
-        color: "white",
-        textAlign: "center",
+        fontSize: 16,
+        color: "#555",
         marginBottom: 30,
-        fontFamily: "Montserrat-Regular",
+    },
+    bottomSection: {
+        flex: 0.5,
+        justifyContent: "flex-end",
+        alignItems: "center",
     },
 });
 

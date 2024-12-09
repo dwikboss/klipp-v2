@@ -9,6 +9,7 @@ import {
 import { Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { OnboardingProvider } from "../../contexts/OnboardingContext";
+import { Session } from "@supabase/supabase-js";
 import React from "react";
 
 const RegisterLayout = () => {

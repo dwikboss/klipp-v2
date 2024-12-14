@@ -2,13 +2,13 @@ import React, { useState, useContext, createContext } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { useOnboarding } from "../../contexts/OnboardingContext";
-import { SessionContext } from "../../contexts/SessionContext";
+import { useSession } from "../../contexts/SessionContext";
 import { supabase } from "../../utils/supabase";
 import CustomButton from "../../components/CustomButton";
 
 const Onboarding4 = () => {
     const router = useRouter();
-    const session = useContext(SessionContext);
+    const session = useSession();
     const { data, setData } = useOnboarding();
     const [loading, setLoading] = useState(false);
 
@@ -47,7 +47,7 @@ const Onboarding4 = () => {
                 throw new Error("Profile upload failed");
             }
 
-            router.push("/(tabs)/index");
+            router.push("/(tabs)/home");
         } catch (error) {
             console.error(error.message);
         } finally {

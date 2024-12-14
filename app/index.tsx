@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, StyleSheet, Image } from "react-native";
-import { Redirect } from "expo-router";
+import { Text, View, StyleSheet, Image, ActivityIndicator } from "react-native";
+import { Redirect, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Animated, {
     useSharedValue,
@@ -15,8 +15,11 @@ import Auth from "../components/auth/Auth";
 const Index = () => {
     const offset = useSharedValue(75 / 2 - 25);
     const session = useSession();
+    const router = useRouter();
+
     const [profileUpdatedAt, setProfileUpdatedAt] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [fetching, setFetching] = useState(false);
 
     const animatedStyles = useAnimatedStyle(() => ({
         transform: [{ translateY: offset.value }],
@@ -32,9 +35,10 @@ const Index = () => {
 
     useEffect(() => {
         const fetchProfile = async () => {
+            setLoading(true);
             try {
                 if (!session?.user?.id) {
-                    setLoading(false);
+                    setTimeout(() => setLoading(false), 2000);
                     return;
                 }
 
@@ -46,31 +50,59 @@ const Index = () => {
 
                 if (error) {
                     console.error("Error fetching profile:", error);
-                    return;
+                } else {
+                    setProfileUpdatedAt(profile?.updated_at);
+                    if (profile?.updated_at) {
+                        router.replace("/home");
+                    } else {
+                        router.replace("/onboarding1");
+                    }
+                    
                 }
-
-                setProfileUpdatedAt(profile?.updated_at);
             } catch (error) {
                 console.error("Unexpected error:", error);
             } finally {
+                setFetching(false);
                 setLoading(false);
+                // setTimeout(() => setFetching(false), 2000);
+                // setTimeout(() => setLoading(false), 2000);
             }
         };
 
         fetchProfile();
-    }, [session]);
+    }, [session?.user?.id]);
 
-    if (loading) {
+    if (loading || fetching) {
         return (
-            <SafeAreaView style={styles.container}>
-                <Text>Loading...</Text>
-            </SafeAreaView>
+            <View
+                style={{
+                    flex: 1,
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}
+            >
+                <Text
+                    style={{
+                        color: "white",
+                        fontFamily: "MontserratAlternates-Bold",
+                        fontSize: 64,
+                        marginBottom: 50,
+                    }}
+                >
+                    Klipp
+                </Text>
+                <ActivityIndicator size="large" color="#fff" />
+            </View>
         );
     }
 
-    if (profileUpdatedAt) {
-        return <Redirect href="/home" />;
-    }
+    // if (session) {
+    //     if (!profileUpdatedAt) {
+    //         return <Redirect href="/onboarding1" />;
+    //     } else {
+    //         return <Redirect href="/home" />;
+    //     }
+    // }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -91,6 +123,7 @@ const Index = () => {
             </View>
         </SafeAreaView>
     );
+    
 };
 
 const styles = StyleSheet.create({
@@ -131,6 +164,5 @@ const styles = StyleSheet.create({
         fontFamily: "Montserrat-Regular",
     },
 });
-
 
 export default Index;

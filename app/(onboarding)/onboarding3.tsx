@@ -6,6 +6,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useOnboarding } from "../../contexts/OnboardingContext";
+import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "../../components/CustomButton";
 import ImageUpload from "../../components/ImageUpload";
 import * as ImagePicker from "expo-image-picker";
@@ -21,7 +22,8 @@ const Onboarding3 = () => {
     };
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
+                <Text style={styles.title}>Klipp</Text>
             <View style={styles.formContainer}>
                 <Text style={styles.onboardingSubtitle}>
                     Annyeong {data.username}!
@@ -46,18 +48,24 @@ const Onboarding3 = () => {
                     handlePress={() => router.push("/onboarding4")}
                 />
             </View>
-        </View>
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
+    title: {
+        fontSize: 24,
+        color: "white",
+        textAlign: "center",
+        marginTop: 25,
+        fontFamily: "MontserratAlternates-Bold",
+    },
     container: {
         flex: 1,
         backgroundColor: "black",
         alignItems: "center",
         justifyContent: "space-between",
         height: "100%",
-        paddingTop: 75,
         paddingHorizontal: 25,
     },
     onboardingSubtitle: {

@@ -15,40 +15,34 @@ import React from "react";
 const RegisterLayout = () => {
     return (
         <OnboardingProvider>
-            <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
-                style={{ flex: 1 }}
-            >
-                <SafeAreaView style={styles.container}>
-                    <Text style={styles.title}>Klipp</Text>
-                    <Stack>
-                        <Stack.Screen
-                            name="onboarding1"
-                            options={{
-                                headerShown: false,
-                            }}
-                        />
-                        <Stack.Screen
-                            name="onboarding2"
-                            options={{
-                                headerShown: false,
-                            }}
-                        />
-                        <Stack.Screen
-                            name="onboarding3"
-                            options={{
-                                headerShown: false,
-                            }}
-                        />
-                        <Stack.Screen
-                            name="onboarding4"
-                            options={{
-                                headerShown: false,
-                            }}
-                        />
-                    </Stack>
-                </SafeAreaView>
-            </KeyboardAvoidingView>
+            <View style={styles.container}>
+                <Stack>
+                    <Stack.Screen
+                        name="onboarding1"
+                        options={{
+                            headerShown: false,
+                        }}
+                    />
+                    <Stack.Screen
+                        name="onboarding2"
+                        options={{
+                            headerShown: false,
+                        }}
+                    />
+                    <Stack.Screen
+                        name="onboarding3"
+                        options={{
+                            headerShown: false,
+                        }}
+                    />
+                    <Stack.Screen
+                        name="onboarding4"
+                        options={{
+                            headerShown: false,
+                        }}
+                    />
+                </Stack>
+            </View>
         </OnboardingProvider>
     );
 };
@@ -57,7 +51,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "black",
-        paddingBottom: 25,
+        paddingBottom: 50,
     },
     title: {
         fontSize: 24,

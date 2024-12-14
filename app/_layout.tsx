@@ -13,7 +13,9 @@ import "react-native-reanimated";
 import { AppState } from "react-native";
 import { Session } from "@supabase/supabase-js";
 import * as SplashScreen from "expo-splash-screen";
+import * as SystemUI from 'expo-system-ui';
 
+SystemUI.setBackgroundColorAsync("transparent");
 AppState.addEventListener("change", (state) => {
     if (state === "active") {
         supabase.auth.startAutoRefresh();
@@ -64,10 +66,6 @@ export default function RootLayout() {
     });
 
     const router = useRouter();
-    // async function signOut() {
-    //     const { error } = await supabase.auth.signOut();
-    // }
-    // signOut();
 
     useEffect(() => {
         if (error) throw error;
@@ -78,7 +76,7 @@ export default function RootLayout() {
         supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session);
         });
-    }, [router]);
+    }, []);
 
     useEffect(() => {
         if (error) throw error;

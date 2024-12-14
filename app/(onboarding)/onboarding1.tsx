@@ -1,35 +1,41 @@
 import React, { useState } from "react";
-import {
-    View,
-    Text,
-    StyleSheet,
-    Platform,
-    Keyboard,
-} from "react-native";
+import { View, Text, StyleSheet, Platform, Keyboard } from "react-native";
 import { useRouter } from "expo-router";
 import { SessionContext } from "../../contexts/SessionContext";
+import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "../../components/CustomButton";
 
 const Onboarding1 = () => {
     const router = useRouter();
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
+            <Text style={styles.title}>Klipp</Text>
             <Text style={styles.onboardingMainBodyText}>
                 Let's setup your Klipp profile
             </Text>
-            <CustomButton title="Let's go!" containerStyles={{ width: "100%" }} handlePress={() => router.push("/onboarding2")}/>
-        </View>
+            <CustomButton
+                title="Let's go!"
+                containerStyles={{ width: "100%" }}
+                handlePress={() => router.push("/onboarding2")}
+            />
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
+    title: {
+        fontSize: 24,
+        color: "white",
+        textAlign: "center",
+        marginTop: 25,
+        fontFamily: "MontserratAlternates-Bold",
+    },
     container: {
         flex: 1,
         backgroundColor: "black",
         alignItems: "center",
         justifyContent: "space-between",
-        paddingTop: 75,
         paddingHorizontal: 25,
     },
     onboardingMainBodyText: {

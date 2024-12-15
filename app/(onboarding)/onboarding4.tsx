@@ -1,66 +1,27 @@
-import React, { useState, useContext, createContext } from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { useOnboarding } from "../../contexts/OnboardingContext";
-import { useSession } from "../../contexts/SessionContext";
-import { supabase } from "../../utils/supabase";
+import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "../../components/CustomButton";
+import ImageUpload from "../../components/ImageUpload";
+import * as ImagePicker from "expo-image-picker";
 
-const Onboarding4 = () => {
+const Onboarding3 = () => {
     const router = useRouter();
-    const session = useSession();
-    const { data, setData } = useOnboarding();
     const [loading, setLoading] = useState(false);
+    const { data, setData } = useOnboarding();
 
-    console.log("user: " + session.user.id);
-
-    const handleSubmit = async () => {
-        setLoading(true);
-
-        try {
-            let avatarUrl = null;
-            if (data.avatarFile) {
-                const file = data.avatarFile;
-                const { data: storageData, error } = await supabase.storage
-                    .from("avatars")
-                    .upload(file.name, { uri: file.uri, type: file.type });
-
-                if (error) {
-                    throw new Error("Avatar upload failed");
-                }
-
-                avatarUrl = supabase.storage
-                    .from("avatars")
-                    .getPublicUrl(file.name).data.publicUrl;
-            }
-
-            const { error } = await supabase
-                .from("profiles")
-                .update({
-                    username: data.username,
-                    avatar_url: avatarUrl,
-                    updated_at: new Date(),
-                })
-                .eq("id", session?.user.id);
-
-            if (error) {
-                throw new Error("Profile upload failed");
-            }
-
-            router.push("/(tabs)/home");
-        } catch (error) {
-            console.error(error.message);
-        } finally {
-            setLoading(false);
-        }
+    const handleInputChange = (text: string) => {
+        setData({ username: text });
     };
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
+            <Text style={styles.title}>Klipp</Text>
             <View style={styles.formContainer}>
-                <Text style={styles.onboardingSubtitle}>All set.</Text>
-                <Text style={styles.onboardingMainBodyText}>
-                    Welcome to Klipp!
+                <Text style={styles.onboardingSubtitle}>
+                    test
                 </Text>
             </View>
 
@@ -68,21 +29,27 @@ const Onboarding4 = () => {
                 <CustomButton
                     title="Continue"
                     containerStyles={{ width: "100%" }}
-                    handlePress={handleSubmit}
+                    handlePress={() => router.push("/onboarding4")}
                 />
             </View>
-        </View>
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
+    title: {
+        fontSize: 24,
+        color: "white",
+        textAlign: "center",
+        marginTop: 25,
+        fontFamily: "MontserratAlternates-Bold",
+    },
     container: {
         flex: 1,
         backgroundColor: "black",
         alignItems: "center",
         justifyContent: "space-between",
         height: "100%",
-        paddingTop: 75,
         paddingHorizontal: 25,
     },
     onboardingSubtitle: {
@@ -107,4 +74,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Onboarding4;
+export default Onboarding3;

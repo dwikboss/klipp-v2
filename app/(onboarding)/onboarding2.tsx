@@ -23,35 +23,37 @@ const Onboarding2 = () => {
     const { data, setData } = useOnboarding();
 
     return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={{ flex: 1 }}
-        >
-            <SafeAreaView style={styles.container}>
-                <Text style={styles.title}>Klipp</Text>
-                <View style={styles.formContainer}>
-                    <Text style={styles.onboardingMainBodyText}>
-                        Pick a username
-                    </Text>
-                    <FormField
-                        placeholder="Your name"
-                        handleChangeText={(e) => setData({ username: e })}
-                    />
-                </View>
+        <SafeAreaView style={{ backgroundColor: "black", flex: 1 }}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={{ flex: 1 }}
+            >
+                <View style={styles.container}>
+                    <Text style={styles.title}>Klipp</Text>
+                    <View style={styles.formContainer}>
+                        <Text style={styles.onboardingMainBodyText}>
+                            Pick a username
+                        </Text>
+                        <FormField
+                            placeholder="Your name"
+                            handleChangeText={(e) => setData({ username: e })}
+                        />
+                    </View>
 
-                <View style={{ width: "100%" }}>
-                    <Text style={styles.onboardingSubtitle}>
-                        Don't worry. You will be able to change your username
-                        later.
-                    </Text>
-                    <CustomButton
-                        title="Continue"
-                        containerStyles={{ width: "100%" }}
-                        handlePress={() => router.push("/onboarding3")}
-                    />
+                    <View style={{ width: "100%" }}>
+                        <Text style={styles.onboardingSubtitle}>
+                            Don't worry. You will be able to change your
+                            username later.
+                        </Text>
+                        <CustomButton
+                            title="Continue"
+                            containerStyles={{ width: "100%" }}
+                            handlePress={() => router.push("/onboarding3")}
+                        />
+                    </View>
                 </View>
-            </SafeAreaView>
-        </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
     );
 };
 
@@ -69,7 +71,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-between",
         height: "100%",
-        paddingHorizontal: 25,
+        paddingHorizontal: 25
     },
     onboardingMainBodyText: {
         color: "white",

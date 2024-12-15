@@ -70,7 +70,7 @@ export default function HomeScreen() {
             <Text style={styles.title}>Klipp</Text>
             <GestureFlipView
                 width={width}
-                height={height * 0.65}
+                height={height * 0.68}
                 renderFront={renderFront}
                 renderBack={renderBack}
             />
@@ -89,7 +89,14 @@ const styles = StyleSheet.create({
     },
     frontStyle: {
         flex: 1,
-        width: width * 0.9,
+        width: width * 0.92,
+        backgroundColor: "red",
+        borderRadius: 25,
+        overflow: "hidden",
+    },
+    backStyle: {
+        flex: 1,
+        width: width * 0.92,
         backgroundColor: "red",
         borderRadius: 25,
         overflow: "hidden",
@@ -107,7 +114,7 @@ const styles = StyleSheet.create({
     },
     backStyle: {
         flex: 1,
-        width: width * 0.95,
+        width: width,
         backgroundColor: "red",
         borderRadius: 25,
     },

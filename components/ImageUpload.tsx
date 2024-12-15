@@ -27,7 +27,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         if (!result.canceled) {
             const file = {
                 uri: result.assets[0].uri,
-                name: `avatar-${Date.now()}.jpg`,
+                name: `avatar-${Math.random()}.${fileExt}.jpg`,
                 type: "image/jpeg",
             };
             setData({ avatarFile: file });

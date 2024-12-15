@@ -35,42 +35,53 @@ const Index = () => {
 
     useEffect(() => {
         const fetchProfile = async () => {
+            const startTime = Date.now();
             setLoading(true);
+            setFetching(true);
+    
             try {
                 if (!session?.user?.id) {
-                    setTimeout(() => setLoading(false), 2000);
+                    setTimeout(() => {
+                        setLoading(false);
+                    }, 2000);
                     return;
                 }
-
+    
                 const { data: profile, error } = await supabase
                     .from("profiles")
                     .select("updated_at")
                     .eq("id", session.user.id)
                     .single();
-
+    
                 if (error) {
                     console.error("Error fetching profile:", error);
                 } else {
                     setProfileUpdatedAt(profile?.updated_at);
-                    if (profile?.updated_at) {
-                        router.replace("/home");
-                    } else {
-                        router.replace("/onboarding1");
-                    }
-                    
+                    const targetRoute = profile?.updated_at
+                        ? "/home"
+                        : "/onboarding1";
+    
+                    const elapsedTime = Date.now() - startTime;
+                    const delay = Math.max(1500 - elapsedTime, 0);
+                    setTimeout(() => {
+                        router.replace(targetRoute);
+                    }, delay);
                 }
             } catch (error) {
                 console.error("Unexpected error:", error);
             } finally {
-                setFetching(false);
-                setLoading(false);
-                // setTimeout(() => setFetching(false), 2000);
-                // setTimeout(() => setLoading(false), 2000);
+                const elapsedTime = Date.now() - startTime;
+                const delay = Math.max(1500 - elapsedTime, 0);
+                setTimeout(() => {
+                    setFetching(false);
+                    setLoading(false);
+                }, delay);
             }
         };
-
+    
         fetchProfile();
     }, [session?.user?.id]);
+    
 
     if (loading || fetching) {
         return (
@@ -79,6 +90,7 @@ const Index = () => {
                     flex: 1,
                     alignItems: "center",
                     justifyContent: "center",
+                    backgroundColor: "black"
                 }}
             >
                 <Text
@@ -91,7 +103,7 @@ const Index = () => {
                 >
                     Klipp
                 </Text>
-                <ActivityIndicator size="large" color="#fff" />
+                <ActivityIndicator size="small" color="#fff" />
             </View>
         );
     }

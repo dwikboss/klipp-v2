@@ -4,16 +4,17 @@ import {
     ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Slot, useRouter } from "expo-router";
+import { Slot, useRouter, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import { supabase } from "../utils/supabase";
 import { SessionProvider } from "../contexts/SessionContext";
+import { UserProvider, useUser } from "../contexts/UserContext";
 import "react-native-reanimated";
 import { AppState } from "react-native";
 import { Session } from "@supabase/supabase-js";
 import * as SplashScreen from "expo-splash-screen";
-import * as SystemUI from 'expo-system-ui';
+import * as SystemUI from "expo-system-ui";
 
 SystemUI.setBackgroundColorAsync("transparent");
 AppState.addEventListener("change", (state) => {
@@ -88,7 +89,13 @@ export default function RootLayout() {
 
     return (
         <SessionProvider session={session}>
-            <Slot />
+            <UserProvider>
+                <Stack
+                    screenOptions={{
+                        headerShown: false,
+                    }}
+                />
+            </UserProvider>
         </SessionProvider>
     );
 }

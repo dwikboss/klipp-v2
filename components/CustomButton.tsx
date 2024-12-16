@@ -1,7 +1,16 @@
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
 import React from "react";
+import { GestureResponderEvent } from "react-native";
 
-const CustomButton = ({ title, handlePress, containerStyles, textStyles, isLoading }) => {
+interface CustomButtonProps {
+  title: string;
+  handlePress: (event: GestureResponderEvent) => void;
+  containerStyles?: object;
+  textStyles?: object;
+  isLoading?: boolean;
+}
+
+const CustomButton: React.FC<CustomButtonProps> = ({ title, handlePress, containerStyles, textStyles, isLoading }) => {
   return (
     <TouchableOpacity
       activeOpacity={0.7}

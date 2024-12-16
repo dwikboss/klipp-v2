@@ -59,7 +59,7 @@ const Index = () => {
                     setProfileUpdatedAt(profile?.updated_at);
                     const targetRoute = profile?.updated_at
                         ? "/home"
-                        : "/onboarding1";
+                        : "/OnboardingCarousel";
     
                     const elapsedTime = Date.now() - startTime;
                     const delay = Math.max(1500 - elapsedTime, 0);

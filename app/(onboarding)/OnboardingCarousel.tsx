@@ -6,6 +6,7 @@ import {
     SafeAreaView,
     FlatList,
     TouchableOpacity,
+    TextInput,
 } from "react-native";
 import Swiper from "react-native-swiper";
 import { useSession } from "../../contexts/SessionContext";
@@ -24,8 +25,11 @@ const OnboardingCarousel = () => {
     const [loading, setLoading] = useState(false);
     const [kpopGroups, setKpopGroups] = useState<any[]>([]);
     const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
+    const [kpopIdols, setKpopIdols] = useState<any[]>([]);
+    const [selectedIdol, setSelectedIdol] = useState<string | null>(null);
     const { data: onboardingData, setData: setOnboardingData } =
         useOnboarding() || {};
+    const [idolSearchQuery, setIdolSearchQuery] = useState("");
 
     useEffect(() => {
         const fetchKpopGroups = async () => {
@@ -42,12 +46,30 @@ const OnboardingCarousel = () => {
         fetchKpopGroups();
     }, []);
 
+    useEffect(() => {
+        const fetchKpopIdols = async () => {
+            const { data, error } = await supabase
+                .from("kpop_idols")
+                .select("*, kpop_groups(name)")
+                .order("name", { ascending: true });
+
+            if (error) {
+                console.error("Error fetching K-pop idols:", error);
+            } else {
+                setKpopIdols(data);
+            }
+        };
+
+        fetchKpopIdols();
+    }, []);
+
     const handleNext = () => {
-        if (currentIndex < 3) {
+        if (currentIndex < 4) {
             swiperRef.current?.scrollBy(1);
             setCurrentIndex(currentIndex + 1);
         } else {
-            handleSubmit();
+            console.log("Submitting onboarding data");
+            // handleSubmit();
         }
     };
 
@@ -75,7 +97,8 @@ const OnboardingCarousel = () => {
                 .update({
                     username: onboardingData.username,
                     avatar_url: avatarUrl,
-                    // favorite_kpop_groups: selectedGroups,
+                    favorite_kpop_groups: selectedGroups,
+                    favorite_idol: selectedIdol,
                     updated_at: new Date(),
                 })
                 .eq("id", session?.user.id);
@@ -106,6 +129,13 @@ const OnboardingCarousel = () => {
             return prevSelected;
         });
     };
+
+    const filteredIdols = idolSearchQuery
+        ? kpopIdols.filter((idol) =>
+              idol.name.toLowerCase().includes(idolSearchQuery.toLowerCase()) ||
+              idol.kpop_groups.name.toLowerCase().includes(idolSearchQuery.toLowerCase())
+          )
+        : kpopIdols.slice(0, 3);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -161,13 +191,57 @@ const OnboardingCarousel = () => {
                                 key={item.id}
                                 style={[
                                     styles.groupItem,
-                                    selectedGroups.includes(item.name) &&
-                                        styles.selectedGroupItem,
+                                    selectedGroups.includes(item.name) 
+                                        ? { backgroundColor: `#${item.associated_color}` }
+                                        : {  }
                                 ]}
                                 onPress={() => toggleGroupSelection(item.name)}
                             >
-                                <Text style={styles.groupText}>
+                                <Text style={{ 
+                                    color: selectedGroups.includes(item.name) ? (item.associated_color.toLowerCase() === 'ffffff' ? 'black' : 'white') : 'white',
+                                    fontSize: 20
+                                }}>
                                     {item.fandom_name}
+                                </Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                </View>
+
+                <View style={styles.slide}>
+                    <Text style={styles.onboardingMainBodyText}>
+                        Select your favorite idol
+                    </Text>
+                    <View style={styles.inputWrapper}>
+                        {selectedIdol ? (
+                            <TouchableOpacity style={styles.pill} onPress={() => setSelectedIdol(null)}>
+                                <Text style={styles.pillText}>{selectedIdol}</Text>
+                                <Text style={styles.removeText}>✕</Text>
+                            </TouchableOpacity>
+                        ) : (
+                            <TextInput
+                                style={[styles.searchInput, { fontSize: 36, fontFamily: "Montserrat-Bold" }]}
+                                placeholder="..."
+                                placeholderTextColor="#1f1f1f"
+                                value={idolSearchQuery}
+                                onChangeText={setIdolSearchQuery}
+                                keyboardType="default"
+                                editable={true}
+                            />
+                        )}
+                    </View>
+                    <View style={styles.wrapContainer}>
+                        {filteredIdols.map((idol) => (
+                            <TouchableOpacity
+                                key={idol.id}
+                                style={[
+                                    styles.groupItem,
+                                    selectedIdol === idol.name && styles.selectedGroupItem,
+                                ]}
+                                onPress={() => setSelectedIdol(selectedIdol === idol.name ? null : idol.name)}
+                            >
+                                <Text style={styles.groupText}>
+                                    {idol.name} - {idol.kpop_groups.name}
                                 </Text>
                             </TouchableOpacity>
                         ))}
@@ -199,9 +273,10 @@ const styles = StyleSheet.create({
     },
     slide: {
         flex: 1,
-        justifyContent: "center",
+        justifyContent: "flex-start",
         alignItems: "center",
         paddingHorizontal: 25,
+        paddingTop: 50
     },
     title: {
         fontSize: 24,
@@ -212,10 +287,10 @@ const styles = StyleSheet.create({
     },
     onboardingMainBodyText: {
         color: "white",
-        fontSize: 24,
+        fontSize: 36,
         fontFamily: "Montserrat-SemiBold",
         textAlign: "center",
-        marginBottom: 20,
+        marginBottom: 50,
     },
     onboardingSubtitle: {
         color: "#545454",
@@ -225,6 +300,9 @@ const styles = StyleSheet.create({
         fontFamily: "Montserrat-Regular",
     },
     customTextStyle: {
+        fontSize: 36,
+        color: "white",
+        fontFamily: "Montserrat-Bold",
     },
     buttonContainer: {
         justifyContent: "center",
@@ -250,17 +328,76 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     groupItem: {
-        paddingHorizontal: 15,
+        paddingHorizontal: 20,
         paddingVertical: 8,
-        margin: 6,
+        margin: 5,
         backgroundColor: "#333",
         borderRadius: 20,
-        borderWidth: 1,
         borderColor: "white",
     },
     selectedGroupItem: {
         backgroundColor: "#555",
-        borderColor: "#888",
+        fontSize: 18,
+    },
+    idolList: {
+        marginBottom: 50,
+    },
+    dropdownContainer: {
+        maxHeight: 150,
+        width: '100%',
+        borderColor: 'gray',
+        borderWidth: 1,
+        borderRadius: 5,
+        overflow: 'hidden',
+    },
+    dropdownList: {
+        width: '100%',
+    },
+    dropdownItem: {
+        padding: 10,
+        backgroundColor: '#333',
+    },
+    selectedDropdownItem: {
+        backgroundColor: '#555',
+    },
+    searchInput: {
+        borderColor: 'gray',
+        paddingHorizontal: 10,
+        paddingVertical: 15,
+        color: 'white',
+        width: '100%',
+        textAlign: 'center',
+    },
+    inputWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderColor: 'gray',
+        borderRadius: 5,
+        padding: 10,
+        marginBottom: 10,
+        width: '100%',
+    },
+    pill: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'white',
+        borderRadius: 999,
+        paddingHorizontal: 25,
+        paddingVertical: 15,
+        gap: 10,
+    },
+    pillText: {
+        color: 'black',
+        fontSize: 24,
+        fontFamily: "Montserrat-Bold",
+        marginRight: 5,
+    },
+    removeText: {
+        color: 'black',
+        fontSize: 16,
+        fontFamily: "Montserrat-Bold",
     },
 });
 

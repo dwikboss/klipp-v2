@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState } from "react";
 interface OnboardingData {
     username?: string;
     avatarFile?: { uri: string; name: string; type: string };
+    favoriteIdol?: string;
 }
 
 interface OnboardingContextType {

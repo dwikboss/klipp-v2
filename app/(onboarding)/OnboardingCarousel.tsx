@@ -64,12 +64,11 @@ const OnboardingCarousel = () => {
     }, []);
 
     const handleNext = () => {
-        if (currentIndex < 4) {
+        if (currentIndex < 3) {
             swiperRef.current?.scrollBy(1);
             setCurrentIndex(currentIndex + 1);
         } else {
-            console.log("Submitting onboarding data");
-            // handleSubmit();
+            handleSubmit();
         }
     };
 
@@ -121,19 +120,23 @@ const OnboardingCarousel = () => {
 
     const toggleGroupSelection = (group: string) => {
         setSelectedGroups((prevSelected) => {
+            let updatedGroups;
             if (prevSelected.includes(group)) {
-                return prevSelected.filter((g) => g !== group);
+                updatedGroups = prevSelected.filter((g) => g !== group);
             } else if (prevSelected.length < 3) {
-                return [...prevSelected, group];
+                updatedGroups = [...prevSelected, group];
+            } else {
+                updatedGroups = prevSelected;
             }
-            return prevSelected;
+            setOnboardingData({ selectedGroups: updatedGroups });
+            console.log(updatedGroups);
+            return updatedGroups;
         });
     };
 
     const filteredIdols = idolSearchQuery
         ? kpopIdols.filter((idol) =>
-              idol.name.toLowerCase().includes(idolSearchQuery.toLowerCase()) ||
-              idol.kpop_groups.name.toLowerCase().includes(idolSearchQuery.toLowerCase())
+              idol.name.toLowerCase().includes(idolSearchQuery.toLowerCase())
           )
         : kpopIdols.slice(0, 3);
 
@@ -191,14 +194,14 @@ const OnboardingCarousel = () => {
                                 key={item.id}
                                 style={[
                                     styles.groupItem,
-                                    selectedGroups.includes(item.name) 
+                                    selectedGroups.includes(item.id) 
                                         ? { backgroundColor: `#${item.associated_color}` }
                                         : {  }
                                 ]}
-                                onPress={() => toggleGroupSelection(item.name)}
+                                onPress={() => toggleGroupSelection(item.id)}
                             >
                                 <Text style={{ 
-                                    color: selectedGroups.includes(item.name) ? (item.associated_color.toLowerCase() === 'ffffff' ? 'black' : 'white') : 'white',
+                                    color: selectedGroups.includes(item.id) ? (item.associated_color.toLowerCase() === 'ffffff' ? 'black' : 'white') : 'white',
                                     fontSize: 20
                                 }}>
                                     {item.fandom_name}
@@ -240,9 +243,7 @@ const OnboardingCarousel = () => {
                                 ]}
                                 onPress={() => setSelectedIdol(selectedIdol === idol.name ? null : idol.name)}
                             >
-                                <Text style={styles.groupText}>
-                                    {idol.name} - {idol.kpop_groups.name}
-                                </Text>
+                                <Text style={styles.groupText}>{idol.name}</Text>
                             </TouchableOpacity>
                         ))}
                     </View>

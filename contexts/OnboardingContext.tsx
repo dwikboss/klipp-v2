@@ -4,6 +4,8 @@ interface OnboardingData {
     username?: string;
     avatarFile?: { uri: string; name: string; type: string };
     favoriteIdol?: string;
+    favoriteKpopGroups?: string[];
+    selectedGroups?: string[];
 }
 
 interface OnboardingContextType {

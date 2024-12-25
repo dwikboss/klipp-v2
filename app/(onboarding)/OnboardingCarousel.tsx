@@ -30,6 +30,7 @@ const OnboardingCarousel = () => {
     const { data: onboardingData, setData: setOnboardingData } =
         useOnboarding() || {};
     const [idolSearchQuery, setIdolSearchQuery] = useState("");
+    const [groupSearchQuery, setGroupSearchQuery] = useState("");
 
     useEffect(() => {
         const fetchKpopGroups = async () => {
@@ -64,10 +65,11 @@ const OnboardingCarousel = () => {
     }, []);
 
     const handleNext = () => {
-        if (currentIndex < 3) {
+        if (currentIndex < 4) {
             swiperRef.current?.scrollBy(1);
             setCurrentIndex(currentIndex + 1);
         } else {
+            console.log(onboardingData);
             handleSubmit();
         }
     };
@@ -91,19 +93,31 @@ const OnboardingCarousel = () => {
                     .getPublicUrl(file.name).data.publicUrl;
             }
 
-            const { error } = await supabase
+            const { error: profileError } = await supabase
                 .from("profiles")
                 .update({
                     username: onboardingData.username,
                     avatar_url: avatarUrl,
-                    favorite_kpop_groups: selectedGroups,
-                    favorite_idol: selectedIdol,
                     updated_at: new Date(),
                 })
                 .eq("id", session?.user.id);
 
-            if (error) {
+            if (profileError) {
                 throw new Error("Profile update failed");
+            }
+
+            const { error: cardsError } = await supabase
+                .from("cards")
+                .insert({
+                    profile_id: session?.user.id,
+                    favorite_idol_id: selectedIdol ? kpopIdols.find(idol => idol.name === selectedIdol)?.id : null,
+                    favorite_group_1_id: selectedGroups[0] || null,
+                    favorite_group_2_id: selectedGroups[1] || null,
+                    favorite_group_3_id: selectedGroups[2] || null,
+                });
+
+            if (cardsError) {
+                throw new Error("Cards update failed");
             }
 
             router.push("/(tabs)/home");
@@ -139,6 +153,15 @@ const OnboardingCarousel = () => {
               idol.name.toLowerCase().includes(idolSearchQuery.toLowerCase())
           )
         : kpopIdols.slice(0, 3);
+
+    const filteredGroups = groupSearchQuery
+        ? kpopGroups.filter((group) =>
+              group.fandom_name.toLowerCase().includes(groupSearchQuery.toLowerCase())
+          )
+        : [
+            ...selectedGroups.map((id) => kpopGroups.find((group) => group.id === id)),
+            ...kpopGroups.filter((group) => !selectedGroups.includes(group.id)).slice(0, 3 - selectedGroups.length)
+          ].filter(Boolean);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -188,19 +211,30 @@ const OnboardingCarousel = () => {
                     <Text style={styles.onboardingMainBodyText}>
                         Select up to 3 fandoms you're a part of!
                     </Text>
+                    <View style={styles.inputWrapper}>
+                        <TextInput
+                            style={[styles.searchInput, { fontSize: 36, fontFamily: "Montserrat-Bold" }]}
+                            placeholder="Search groups..."
+                            placeholderTextColor="#1f1f1f"
+                            value={groupSearchQuery}
+                            onChangeText={setGroupSearchQuery}
+                            keyboardType="default"
+                            editable={true}
+                        />
+                    </View>
                     <View style={styles.wrapContainer}>
-                        {kpopGroups.map((item) => (
+                        {filteredGroups.map((item) => (
                             <TouchableOpacity
                                 key={item.id}
                                 style={[
                                     styles.groupItem,
-                                    selectedGroups.includes(item.id) 
+                                    selectedGroups.includes(item.id)
                                         ? { backgroundColor: `#${item.associated_color}` }
-                                        : {  }
+                                        : {}
                                 ]}
                                 onPress={() => toggleGroupSelection(item.id)}
                             >
-                                <Text style={{ 
+                                <Text style={{
                                     color: selectedGroups.includes(item.id) ? (item.associated_color.toLowerCase() === 'ffffff' ? 'black' : 'white') : 'white',
                                     fontSize: 20
                                 }}>

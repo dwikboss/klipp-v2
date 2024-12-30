@@ -7,12 +7,14 @@ interface ImageUploadProps {
     aspect?: [number, number];
     containerStyle?: object;
     imageStyle?: object;
+    imageType: 'avatar' | 'cardFront';
 }
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
     aspect = [1, 1],
     containerStyle,
     imageStyle,
+    imageType,
 }) => {
     const { data, setData } = useOnboarding();
 
@@ -27,18 +29,24 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         if (!result.canceled) {
             const file = {
                 uri: result.assets[0].uri,
-                name: `avatar-${Math.random()}.jpg`,
+                name: `img-${Math.random()}.jpg`,
                 type: "image/jpeg",
             };
-            setData({ avatarFile: file });
+            if (imageType === 'avatar') {
+                setData({ avatarFile: file });
+            } else if (imageType === 'cardFront') {
+                setData({ cardFrontFile: file });
+            }
         }
     };
 
+    const imageUri = imageType === 'avatar' ? data.avatarFile?.uri : data.cardFrontFile?.uri;
+
     return (
         <View style={[styles.container, containerStyle]}>
-            {data.avatarFile?.uri ? (
+            {imageUri ? (
                 <Image
-                    source={{ uri: data.avatarFile.uri }}
+                    source={{ uri: imageUri }}
                     style={[styles.image, imageStyle]}
                 />
             ) : (

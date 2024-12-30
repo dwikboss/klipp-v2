@@ -2,11 +2,6 @@ import {
     View,
     Text,
     StyleSheet,
-    KeyboardAvoidingView,
-    Platform,
-    AppState,
-    Keyboard,
-    Image,
     Dimensions,
 } from "react-native";
 import { useSession } from "../../contexts/SessionContext";
@@ -40,7 +35,7 @@ export default function HomeScreen() {
                 if (error) {
                     console.error('Error fetching card data:', error);
                 } else {
-                    setCardData(data);
+                    setCardData(data as any);
                     console.log(data);
                 }
             } catch (error) {

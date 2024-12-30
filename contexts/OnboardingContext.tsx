@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState } from "react";
 
 interface OnboardingData {
     username?: string;
+    cardFrontFile?: { uri: string; name: string; type: string };
     avatarFile?: { uri: string; name: string; type: string };
     favoriteIdol?: string;
     favoriteKpopGroups?: string[];
@@ -20,7 +21,14 @@ const OnboardingContext = createContext<OnboardingContextType | undefined>(
 export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
-    const [data, setDataState] = useState<OnboardingData>({});
+    const [data, setDataState] = useState<OnboardingData>({
+        username: undefined,
+        avatarFile: undefined,
+        cardFrontFile: undefined,
+        favoriteIdol: undefined,
+        favoriteKpopGroups: undefined,
+        selectedGroups: undefined,
+    });
 
     const setData = (newData: Partial<OnboardingData>) => {
         setDataState((prevData) => ({ ...prevData, ...newData }));

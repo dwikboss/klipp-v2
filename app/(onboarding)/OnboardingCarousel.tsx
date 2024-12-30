@@ -65,7 +65,7 @@ const OnboardingCarousel = () => {
     }, []);
 
     const handleNext = () => {
-        if (currentIndex < 4) {
+        if (currentIndex < 5) {
             swiperRef.current?.scrollBy(1);
             setCurrentIndex(currentIndex + 1);
         } else {
@@ -78,11 +78,15 @@ const OnboardingCarousel = () => {
         setLoading(true);
         try {
             let avatarUrl = null;
-            const file = onboardingData.avatarFile;
-            if (file) {
-                const { data: storageData, error } = await supabase.storage
+            let cardFrontUrl = null;
+
+            const avatarFile = onboardingData.avatarFile;
+            const cardFrontFile = onboardingData.cardFrontFile;
+
+            if (avatarFile) {
+                const { data, error } = await supabase.storage
                     .from("avatars")
-                    .upload(file.name, file as unknown as File);
+                    .upload(avatarFile.name, avatarFile as unknown as File);
 
                 if (error) {
                     throw new Error("Avatar upload failed");
@@ -90,7 +94,21 @@ const OnboardingCarousel = () => {
 
                 avatarUrl = supabase.storage
                     .from("avatars")
-                    .getPublicUrl(file.name).data.publicUrl;
+                    .getPublicUrl(avatarFile.name).data.publicUrl;
+            }
+
+            if (cardFrontFile) {
+                const { data, error } = await supabase.storage
+                    .from("avatars")
+                    .upload(cardFrontFile.name, cardFrontFile as unknown as File);
+
+                if (error) {
+                    throw new Error("Card front upload failed");
+                }
+
+                cardFrontUrl = supabase.storage
+                    .from("avatars")
+                    .getPublicUrl(cardFrontFile.name).data.publicUrl;
             }
 
             const { error: profileError } = await supabase
@@ -114,6 +132,7 @@ const OnboardingCarousel = () => {
                     favorite_group_1_id: selectedGroups[0] || null,
                     favorite_group_2_id: selectedGroups[1] || null,
                     favorite_group_3_id: selectedGroups[2] || null,
+                    cardfront_url: cardFrontUrl,
                 });
 
             if (cardsError) {
@@ -204,6 +223,7 @@ const OnboardingCarousel = () => {
                             borderRadius: 999,
                         }}
                         imageStyle={{ borderRadius: 999 }}
+                        imageType="avatar"
                     />
                 </View>
 
@@ -285,6 +305,21 @@ const OnboardingCarousel = () => {
 
                 <View style={styles.slide}>
                     <Text style={styles.onboardingMainBodyText}>
+                        Upload your card front picture!
+                    </Text>
+                    <ImageUpload
+                        containerStyle={{
+                            width: 225,
+                            height: 300,
+                            borderRadius: 25,
+                        }}
+                        imageStyle={{ borderRadius: 25 }}
+                        imageType="cardFront"
+                    />
+                </View>
+
+                <View style={styles.slide}>
+                    <Text style={styles.onboardingMainBodyText}>
                         Welcome to Klipp!
                     </Text>
                 </View>
@@ -292,7 +327,7 @@ const OnboardingCarousel = () => {
 
             <View style={styles.buttonContainer}>
                 <CustomButton
-                    title={currentIndex < 3 ? "Next" : "Continue"}
+                    title={currentIndex < 5 ? "Next" : "Continue"}
                     containerStyles={styles.button}
                     handlePress={handleNext}
                 />

@@ -78,6 +78,7 @@ export default function RootLayout() {
             setSession(session);
         });
     }, []);
+    
 
     useEffect(() => {
         if (error) throw error;

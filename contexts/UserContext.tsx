@@ -30,7 +30,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 } = await supabase.auth.getUser();
 
                 if (authError || !user) {
-                    console.error("Error fetching user:", authError);
+                    console.log("Error fetching user:", authError);
                     return;
                 }
 
@@ -41,7 +41,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     .single();
 
                 if (profileError) {
-                    console.error("Error fetching profile:", profileError);
+                    console.log("Error fetching profile:", profileError);
                 } else {
                     setProfile(profileData);
                 }

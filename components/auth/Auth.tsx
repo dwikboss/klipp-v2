@@ -71,8 +71,8 @@ const Auth = () => {
                                 } else {
                                     throw new Error("No identityToken.");
                                 }
-                            } catch (e) {
-                                if (e.code === "ERR_REQUEST_CANCELED") {
+                            } catch (e: any) {
+                                if (e?.code === "ERR_REQUEST_CANCELED") {
                                     console.log("Request canceled");
                                 } else {
                                     console.error("Error during sign-in:", e);

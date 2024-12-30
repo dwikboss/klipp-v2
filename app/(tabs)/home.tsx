@@ -3,6 +3,7 @@ import {
     Text,
     StyleSheet,
     Dimensions,
+    ImageBackground,
 } from "react-native";
 import { useSession } from "../../contexts/SessionContext";
 import { useUser } from "../../contexts/UserContext";
@@ -10,49 +11,69 @@ import { supabase } from "../../utils/supabase";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useEffect, useState } from "react";
 import GestureFlipView from "react-native-gesture-flip-card";
+import Skeleton from "react-native-reanimated-skeleton";
+import { useFocusEffect } from '@react-navigation/native';
+import CardSkeleton from "../../components/CardSkeleton";
 
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
 
 export default function HomeScreen() {
-    const { profile, loading } = useUser();
-    const [cardData, setCardData] = useState();
+    const { profile, loading, fetchUserProfile } = useUser();
+    const [cardData, setCardData] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchCardData = async () => {
-            try {
-                const { data, error } = await supabase
-                    .from('cards')
-                    .select(`
-                        *,
-                        favorite_group_1_id:kpop_groups!cards_favorite_group_id_fkey(fandom_name, associated_color),
-                        favorite_group_2_id:kpop_groups!cards_favorite_group_2_id_fkey(fandom_name, associated_color),
-                        favorite_group_3_id:kpop_groups!cards_favorite_group_3_id_fkey(fandom_name, associated_color),
-                        favorite_idol_id:kpop_idols(name)
-                    `)
-                    .eq('profile_id', profile?.id ?? '');
+    const fetchCardData = async (retry = 0) => {
+        try {
+            const { data, error } = await supabase
+                .from('cards')
+                .select(`
+                    *,
+                    favorite_group_1_id:kpop_groups!cards_favorite_group_id_fkey(fandom_name, associated_color),
+                    favorite_group_2_id:kpop_groups!cards_favorite_group_2_id_fkey(fandom_name, associated_color),
+                    favorite_group_3_id:kpop_groups!cards_favorite_group_3_id_fkey(fandom_name, associated_color),
+                    favorite_idol_id:kpop_idols(name)
+                `)
+                .eq('profile_id', profile?.id ?? '');
 
-                if (error) {
-                    console.error('Error fetching card data:', error);
-                } else {
-                    setCardData(data as any);
-                    console.log(data);
-                }
-            } catch (error) {
-                console.error('Unexpected error fetching card data:', error);
+            if (error) {
+                console.error('Error fetching card data:', error);
+            } else if (data.length === 0 && retry < 3) {
+                console.log('Retrying fetch card data...');
+                setTimeout(() => fetchCardData(retry + 1), 1000);
+            } else {
+                setCardData(data as any);
+                console.log('Fetched card data:', data);
             }
-        };
-
-        if (profile) {
-            fetchCardData();
+        } catch (error) {
+            console.error('Unexpected error fetching card data:', error);
+        } finally {
+            setIsLoading(false)
         }
-    }, [profile]);
+    };
+
+    useFocusEffect(
+        React.useCallback(() => {
+            if (!profile) {
+                console.log('Fetching profile data...');
+                fetchUserProfile();
+            } else {
+                console.log('Profile available, fetching card data...');
+                fetchCardData();
+            }
+        }, [profile])
+    );
 
     const renderFront = () => {
+        const cardFrontUrl = cardData[0]?.cardfront_url;
+
         return (
-            <View style={styles.frontStyle}>
+            <ImageBackground
+                source={{ uri: cardFrontUrl }}
+                style={styles.frontStyle}
+            >
+                <View style={styles.overlay} />
                 <View style={styles.frontTop}>
-                    <Text style={styles.carduserName}>Top Section</Text>
                 </View>
 
                 <View style={styles.frontBottom}>
@@ -84,7 +105,7 @@ export default function HomeScreen() {
                         })}
                     </View>
                 </View>
-            </View>
+            </ImageBackground>
         );
     };
 
@@ -113,12 +134,16 @@ export default function HomeScreen() {
     return (
         <SafeAreaView style={styles.containerStyle}>
             <Text style={styles.title}>Klipp</Text>
-            <GestureFlipView
-                width={width}
-                height={height * 0.68}
-                renderFront={renderFront}
-                renderBack={renderBack}
-            />
+            {isLoading ? (
+                <CardSkeleton />
+            ) : (
+                <GestureFlipView
+                    width={width}
+                    height={height * 0.68}
+                    renderFront={renderFront}
+                    renderBack={renderBack}
+                />
+            )}
         </SafeAreaView>
     );
 }
@@ -135,14 +160,14 @@ const styles = StyleSheet.create({
     frontStyle: {
         flex: 1,
         width: width * 0.92,
-        backgroundColor: "red",
+        backgroundColor: "#383838",
         borderRadius: 25,
         overflow: "hidden",
     },
     backStyle: {
         flex: 1,
         width: width * 0.92,
-        backgroundColor: "red",
+        backgroundColor: "#383838",
         borderRadius: 25,
         overflow: "hidden",
     },
@@ -154,7 +179,6 @@ const styles = StyleSheet.create({
     frontBottom: {
         flex: 2,
         padding: 25,
-        backgroundColor: "green",
         gap: 15
     },
     title: {
@@ -186,5 +210,9 @@ const styles = StyleSheet.create({
         paddingVertical: 6,
         alignItems: "center",
         justifyContent: "center",
+    },
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0, 0, 0, 0.25)',
     },
 });

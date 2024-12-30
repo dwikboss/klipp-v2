@@ -12,6 +12,7 @@ interface UserProfile {
 interface UserContextType {
     profile: UserProfile | null;
     loading: boolean;
+    fetchUserProfile: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -20,43 +21,43 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchUserProfile = async () => {
-            setLoading(true);
-            try {
-                const {
-                    data: { user },
-                    error: authError,
-                } = await supabase.auth.getUser();
+    const fetchUserProfile = async () => {
+        setLoading(true);
+        try {
+            const {
+                data: { user },
+                error: authError,
+            } = await supabase.auth.getUser();
 
-                if (authError || !user) {
-                    console.log("Error fetching user:", authError);
-                    return;
-                }
-
-                const { data: profileData, error: profileError } = await supabase
-                    .from("profiles")
-                    .select("*")
-                    .eq("id", user.id)
-                    .single();
-
-                if (profileError) {
-                    console.log("Error fetching profile:", profileError);
-                } else {
-                    setProfile(profileData);
-                }
-            } catch (err) {
-                console.error("Unexpected error:", err);
-            } finally {
-                setLoading(false);
+            if (authError || !user) {
+                console.log("Error fetching user:", authError);
+                return;
             }
-        };
 
+            const { data: profileData, error: profileError } = await supabase
+                .from("profiles")
+                .select("*")
+                .eq("id", user.id)
+                .single();
+
+            if (profileError) {
+                console.log("Error fetching profile:", profileError);
+            } else {
+                setProfile(profileData);
+            }
+        } catch (err) {
+            console.error("Unexpected error:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
         fetchUserProfile();
     }, []);
 
     return (
-        <UserContext.Provider value={{ profile, loading }}>
+        <UserContext.Provider value={{ profile, loading, fetchUserProfile }}>
             {children}
         </UserContext.Provider>
     );

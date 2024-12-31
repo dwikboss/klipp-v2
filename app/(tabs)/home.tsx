@@ -12,8 +12,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useEffect, useState } from "react";
 import GestureFlipView from "react-native-gesture-flip-card";
 import Skeleton from "react-native-reanimated-skeleton";
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from "@react-navigation/native";
 import CardSkeleton from "../../components/CardSkeleton";
+import QRCode from "react-native-qrcode-svg";
 
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
@@ -26,39 +27,41 @@ export default function HomeScreen() {
     const fetchCardData = async (retry = 0) => {
         try {
             const { data, error } = await supabase
-                .from('cards')
-                .select(`
+                .from("cards")
+                .select(
+                    `
                     *,
                     favorite_group_1_id:kpop_groups!cards_favorite_group_id_fkey(fandom_name, associated_color),
                     favorite_group_2_id:kpop_groups!cards_favorite_group_2_id_fkey(fandom_name, associated_color),
                     favorite_group_3_id:kpop_groups!cards_favorite_group_3_id_fkey(fandom_name, associated_color),
                     favorite_idol_id:kpop_idols(name)
-                `)
-                .eq('profile_id', profile?.id ?? '');
+                `
+                )
+                .eq("profile_id", profile?.id ?? "");
 
             if (error) {
-                console.error('Error fetching card data:', error);
+                console.error("Error fetching card data:", error);
             } else if (data.length === 0 && retry < 3) {
-                console.log('Retrying fetch card data...');
+                console.log("Retrying fetch card data...");
                 setTimeout(() => fetchCardData(retry + 1), 1000);
             } else {
                 setCardData(data as any);
-                console.log('Fetched card data:', data);
+                console.log("Fetched card data:", data);
             }
         } catch (error) {
-            console.error('Unexpected error fetching card data:', error);
+            console.error("Unexpected error fetching card data:", error);
         } finally {
-            setIsLoading(false)
+            setIsLoading(false);
         }
     };
 
     useFocusEffect(
         React.useCallback(() => {
             if (!profile) {
-                console.log('Fetching profile data...');
+                console.log("Fetching profile data...");
                 fetchUserProfile();
             } else {
-                console.log('Profile available, fetching card data...');
+                console.log("Profile available, fetching card data...");
                 fetchCardData();
             }
         }, [profile])
@@ -73,36 +76,82 @@ export default function HomeScreen() {
                 style={styles.frontStyle}
             >
                 <View style={styles.overlay} />
-                <View style={styles.frontTop}>
-                </View>
+                <View style={styles.frontTop}></View>
 
                 <View style={styles.frontBottom}>
-                    <Text style={styles.carduserName}>{profile?.username ?? ""}</Text>
-                    <Text style={styles.cardBio}>✨Dressin up like dynamite✨</Text>
+                    <Text style={styles.carduserName}>
+                        {profile?.username ?? ""}
+                    </Text>
+                    <Text style={styles.cardBio}>
+                        ✨Dressin up like dynamite✨
+                    </Text>
                     <View style={styles.tagHolder}>
-                        {Array.isArray(cardData) && cardData.map((card: any, index: number) => {
-                            const color1 = `#${card.favorite_group_1_id?.associated_color}`;
-                            const color2 = `#${card.favorite_group_2_id?.associated_color}`;
-                            const color3 = `#${card.favorite_group_3_id?.associated_color}`;
+                        {Array.isArray(cardData) &&
+                            cardData.map((card: any, index: number) => {
+                                const color1 = `#${card.favorite_group_1_id?.associated_color}`;
+                                const color2 = `#${card.favorite_group_2_id?.associated_color}`;
+                                const color3 = `#${card.favorite_group_3_id?.associated_color}`;
 
-                            const textColor1 = color1.toLowerCase() === '#ffffff' ? 'black' : 'white';
-                            const textColor2 = color2.toLowerCase() === '#ffffff' ? 'black' : 'white';
-                            const textColor3 = color3.toLowerCase() === '#ffffff' ? 'black' : 'white';
+                                const textColor1 =
+                                    color1.toLowerCase() === "#ffffff"
+                                        ? "black"
+                                        : "white";
+                                const textColor2 =
+                                    color2.toLowerCase() === "#ffffff"
+                                        ? "black"
+                                        : "white";
+                                const textColor3 =
+                                    color3.toLowerCase() === "#ffffff"
+                                        ? "black"
+                                        : "white";
 
-                            return (
-                                <React.Fragment key={index}>
-                                    <Text style={[styles.tag, { backgroundColor: color1, color: textColor1 }]}>
-                                        {card.favorite_group_1_id?.fandom_name}
-                                    </Text>
-                                    <Text style={[styles.tag, { backgroundColor: color2, color: textColor2 }]}>
-                                        {card.favorite_group_2_id?.fandom_name}
-                                    </Text>
-                                    <Text style={[styles.tag, { backgroundColor: color3, color: textColor3 }]}>
-                                        {card.favorite_group_3_id?.fandom_name}
-                                    </Text>
-                                </React.Fragment>
-                            );
-                        })}
+                                return (
+                                    <React.Fragment key={index}>
+                                        <Text
+                                            style={[
+                                                styles.tag,
+                                                {
+                                                    backgroundColor: color1,
+                                                    color: textColor1,
+                                                },
+                                            ]}
+                                        >
+                                            {
+                                                card.favorite_group_1_id
+                                                    ?.fandom_name
+                                            }
+                                        </Text>
+                                        <Text
+                                            style={[
+                                                styles.tag,
+                                                {
+                                                    backgroundColor: color2,
+                                                    color: textColor2,
+                                                },
+                                            ]}
+                                        >
+                                            {
+                                                card.favorite_group_2_id
+                                                    ?.fandom_name
+                                            }
+                                        </Text>
+                                        <Text
+                                            style={[
+                                                styles.tag,
+                                                {
+                                                    backgroundColor: color3,
+                                                    color: textColor3,
+                                                },
+                                            ]}
+                                        >
+                                            {
+                                                card.favorite_group_3_id
+                                                    ?.fandom_name
+                                            }
+                                        </Text>
+                                    </React.Fragment>
+                                );
+                            })}
                     </View>
                 </View>
             </ImageBackground>
@@ -110,6 +159,7 @@ export default function HomeScreen() {
     };
 
     const renderBack = () => {
+        const cardId = cardData[0]?.id;
         return (
             <View style={styles.frontStyle}>
                 <View style={styles.frontTop}>
@@ -117,13 +167,14 @@ export default function HomeScreen() {
                 </View>
 
                 <View style={styles.frontBottom}>
-                    <Text style={styles.carduserName}>{profile?.username ?? "Unknown User"}</Text>
-                    <Text style={styles.cardBio}>✨Dressin up like dynamite✨</Text>
-                    <View style={styles.tagHolder}>
-                        <Text style={styles.tag}>FEARNOT</Text>
-                        <Text style={styles.tag}>DIVE</Text>
-                        <Text style={styles.tag}>ARMY</Text>
-                    </View>
+                    {cardId && (
+                        <QRCode
+                            value={cardId.toString()}
+                            size={100}
+                            backgroundColor="white"
+                            color="black"
+                        />
+                    )}
                 </View>
             </View>
         );
@@ -179,7 +230,7 @@ const styles = StyleSheet.create({
     frontBottom: {
         flex: 2,
         padding: 25,
-        gap: 15
+        gap: 15,
     },
     title: {
         fontSize: 28,
@@ -201,7 +252,7 @@ const styles = StyleSheet.create({
     tagHolder: {
         flexDirection: "row",
         flexWrap: "wrap",
-        gap: 10
+        gap: 10,
     },
     tag: {
         backgroundColor: "#fff",
@@ -213,6 +264,6 @@ const styles = StyleSheet.create({
     },
     overlay: {
         ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(0, 0, 0, 0.25)',
+        backgroundColor: "rgba(0, 0, 0, 0.25)",
     },
 });

@@ -17,7 +17,7 @@ import CustomButton from "../../components/CustomButton";
 import FormField from "../../components/FormField";
 import ImageUpload from "../../components/ImageUpload";
 
-const OnboardingCarousel = () => {
+export default function OnboardingCarousel()  {
     const router = useRouter();
     const swiperRef = useRef<Swiper>(null);
     const session = useSession();
@@ -470,5 +470,3 @@ const styles = StyleSheet.create({
         fontFamily: "Montserrat-Bold",
     },
 });
-
-export default OnboardingCarousel;

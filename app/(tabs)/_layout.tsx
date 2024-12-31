@@ -40,7 +40,7 @@ export default function AppLayout() {
             }}
         >
             <Tabs.Screen
-                name="social"
+                name="scanner"
                 options={{
                     headerShown: false,
                     tabBarIcon: ({ color }) => (

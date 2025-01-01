@@ -11,7 +11,6 @@ import { supabase } from "../../utils/supabase";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useEffect, useState } from "react";
 import GestureFlipView from "react-native-gesture-flip-card";
-import Skeleton from "react-native-reanimated-skeleton";
 import { useFocusEffect } from "@react-navigation/native";
 import CardSkeleton from "../../components/CardSkeleton";
 import QRCode from "react-native-qrcode-svg";

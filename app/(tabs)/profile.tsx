@@ -6,6 +6,7 @@ import CustomButton from "../../components/CustomButton";
 import { useUser } from "../../contexts/UserContext";
 import CardDisplay from "../../components/CardDisplay";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { useFocusEffect } from '@react-navigation/native';
 
 const { width } = Dimensions.get("window");
 
@@ -53,9 +54,13 @@ const Profile = () => {
         setLoading(false);
     };
 
-    useEffect(() => {
-        fetchUserStats();
-    }, [profile]);
+    useFocusEffect(
+        React.useCallback(() => {
+            if (profile?.id) {
+                fetchUserStats();
+            }
+        }, [profile])
+    );
 
     const handleSignOut = async () => {
         await supabase.auth.signOut();
@@ -182,8 +187,8 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     simpleCard: {
-        width: width / 3 - 15,
-        marginBottom: 15,
+        width: (width - 40) / 3,
+        marginBottom: 10,
         position: 'relative',
     },
     cardImage: {

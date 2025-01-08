@@ -159,9 +159,6 @@ const scanner = () => {
             {scannedCard && (
                 <SafeAreaView style={styles.safeArea}>
                     <Animated.View style={[styles.cardContainer, animatedStyle]}>
-                        <Text style={styles.modalText}>
-                            You've collected a card!
-                        </Text>
                         <View style={styles.cardWrapper}>
                             <Animated.View style={[styles.cardWrapper, animatedCardStyle]}>
                                 <CardDisplay cardData={scannedCard} />
@@ -230,6 +227,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 0 },
         shadowRadius: 75,
         elevation: 10,
+        marginBottom: 10,
     },
     modalText: {
         textAlign: "center",

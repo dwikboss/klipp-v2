@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState } from "react";
 
 interface OnboardingData {
+    bio?: string;
     username?: string;
     cardFrontFile?: { uri: string; name: string; type: string };
     avatarFile?: { uri: string; name: string; type: string };
@@ -22,6 +23,7 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
     const [data, setDataState] = useState<OnboardingData>({
+        bio: undefined,
         username: undefined,
         avatarFile: undefined,
         cardFrontFile: undefined,

@@ -27,6 +27,7 @@ const FormField = ({
                 placeholder={placeholder}
                 placeholderTextColor="#1f1f1f"
                 placeHolder="#1f1f1f"
+                textAlign={'center'}
                 onChangeText={handleChangeText}
                 keyboardType={keyboardType}
                 secureTextEntry={secureTextEntry && !showPassword}
@@ -57,8 +58,7 @@ const styles = StyleSheet.create({
         flex: 1,
         color: "white",
         fontFamily: "Montserrat-Bold",
-        textAlign: "center",
-        fontSize: 48
+        fontSize: 32
     },
     toggleButton: {
         marginLeft: 10,

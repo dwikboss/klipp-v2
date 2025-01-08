@@ -11,7 +11,7 @@ export default function AppLayout() {
     const router = useRouter();
     const session = useSession();
     const { profile, loading } = useUser();
-    const [avatarUrl, setAvatarUrl] = useState(null);
+    const [avatarUrl, setAvatarUrl] = useState("");
 
     useEffect(() => {
         if (!session) {
@@ -44,7 +44,7 @@ export default function AppLayout() {
                 options={{
                     headerShown: false,
                     tabBarIcon: ({ color }) => (
-                        <FontAwesome size={28} name="user" color={color} />
+                        <FontAwesome size={28} name="camera" color={color} />
                     ),
                 }}
             />

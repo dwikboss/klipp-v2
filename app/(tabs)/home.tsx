@@ -1,10 +1,4 @@
-import {
-    View,
-    Text,
-    StyleSheet,
-    Dimensions,
-    ImageBackground,
-} from "react-native";
+import { View, Text, StyleSheet, Dimensions } from "react-native";
 import { useSession } from "../../contexts/SessionContext";
 import { useUser } from "../../contexts/UserContext";
 import { supabase } from "../../utils/supabase";
@@ -14,6 +8,7 @@ import GestureFlipView from "react-native-gesture-flip-card";
 import { useFocusEffect } from "@react-navigation/native";
 import CardSkeleton from "../../components/CardSkeleton";
 import QRCode from "react-native-qrcode-svg";
+import CardDisplay from "../../components/CardDisplay";
 
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
@@ -33,18 +28,25 @@ export default function HomeScreen() {
                     favorite_group_1_id:kpop_groups!cards_favorite_group_id_fkey(fandom_name, associated_color),
                     favorite_group_2_id:kpop_groups!cards_favorite_group_2_id_fkey(fandom_name, associated_color),
                     favorite_group_3_id:kpop_groups!cards_favorite_group_3_id_fkey(fandom_name, associated_color),
-                    favorite_idol_id:kpop_idols(name)
+                    favorite_idol_id:kpop_idols(name),
+                    profiles:profile_id(username, avatar_url)
                 `
                 )
                 .eq("profile_id", profile?.id ?? "");
-
+                console.log("ALL ", data);
             if (error) {
                 console.error("Error fetching card data:", error);
             } else if (data.length === 0 && retry < 3) {
                 console.log("Retrying fetch card data...");
                 setTimeout(() => fetchCardData(retry + 1), 1000);
             } else {
-                setCardData(data as any);
+                if (data) {
+                    const cardsWithAvatar = data.map(card => ({
+                        ...card,
+                        avatar: card.profiles.avatar_url
+                    }));
+                    setCardData(cardsWithAvatar);
+                }
                 console.log("Fetched card data:", data);
             }
         } catch (error) {
@@ -66,133 +68,13 @@ export default function HomeScreen() {
         }, [profile])
     );
 
-    const renderFront = () => {
-        const cardFrontUrl = cardData[0]?.cardfront_url;
-
-        return (
-            <ImageBackground
-                source={{ uri: cardFrontUrl }}
-                style={styles.frontStyle}
-            >
-                <View style={styles.overlay} />
-                <View style={styles.frontTop}></View>
-
-                <View style={styles.frontBottom}>
-                    <Text style={styles.carduserName}>
-                        {profile?.username ?? ""}
-                    </Text>
-                    <Text style={styles.cardBio}>
-                        ✨Dressin up like dynamite✨
-                    </Text>
-                    <View style={styles.tagHolder}>
-                        {Array.isArray(cardData) &&
-                            cardData.map((card: any, index: number) => {
-                                const color1 = `#${card.favorite_group_1_id?.associated_color}`;
-                                const color2 = `#${card.favorite_group_2_id?.associated_color}`;
-                                const color3 = `#${card.favorite_group_3_id?.associated_color}`;
-
-                                const textColor1 =
-                                    color1.toLowerCase() === "#ffffff"
-                                        ? "black"
-                                        : "white";
-                                const textColor2 =
-                                    color2.toLowerCase() === "#ffffff"
-                                        ? "black"
-                                        : "white";
-                                const textColor3 =
-                                    color3.toLowerCase() === "#ffffff"
-                                        ? "black"
-                                        : "white";
-
-                                return (
-                                    <React.Fragment key={index}>
-                                        <Text
-                                            style={[
-                                                styles.tag,
-                                                {
-                                                    backgroundColor: color1,
-                                                    color: textColor1,
-                                                },
-                                            ]}
-                                        >
-                                            {
-                                                card.favorite_group_1_id
-                                                    ?.fandom_name
-                                            }
-                                        </Text>
-                                        <Text
-                                            style={[
-                                                styles.tag,
-                                                {
-                                                    backgroundColor: color2,
-                                                    color: textColor2,
-                                                },
-                                            ]}
-                                        >
-                                            {
-                                                card.favorite_group_2_id
-                                                    ?.fandom_name
-                                            }
-                                        </Text>
-                                        <Text
-                                            style={[
-                                                styles.tag,
-                                                {
-                                                    backgroundColor: color3,
-                                                    color: textColor3,
-                                                },
-                                            ]}
-                                        >
-                                            {
-                                                card.favorite_group_3_id
-                                                    ?.fandom_name
-                                            }
-                                        </Text>
-                                    </React.Fragment>
-                                );
-                            })}
-                    </View>
-                </View>
-            </ImageBackground>
-        );
-    };
-
-    const renderBack = () => {
-        const cardId = cardData[0]?.id;
-        return (
-            <View style={styles.frontStyle}>
-                <View style={styles.frontTop}>
-                    <Text style={styles.carduserName}>Top Section</Text>
-                </View>
-
-                <View style={styles.frontBottom}>
-                    {cardId && (
-                        <QRCode
-                            value={cardId.toString()}
-                            size={100}
-                            backgroundColor="white"
-                            color="black"
-                        />
-                    )}
-                </View>
-            </View>
-        );
-    };
-
-    console.log(width, height);
-
     return (
         <SafeAreaView style={styles.containerStyle}>
             <Text style={styles.title}>Klipp</Text>
             {isLoading ? (
                 <CardSkeleton />
             ) : (
-                <GestureFlipView
-                    width={width}
-                    height={height * 0.68}
-                    renderFront={renderFront}
-                    renderBack={renderBack}
-                />
+                <CardDisplay cardData={cardData[0]} />
             )}
         </SafeAreaView>
     );
@@ -207,62 +89,11 @@ const styles = StyleSheet.create({
         alignItems: "center",
         gap: 25,
     },
-    frontStyle: {
-        flex: 1,
-        width: width * 0.92,
-        backgroundColor: "#383838",
-        borderRadius: 25,
-        overflow: "hidden",
-    },
-    backStyle: {
-        flex: 1,
-        width: width * 0.92,
-        backgroundColor: "#383838",
-        borderRadius: 25,
-        overflow: "hidden",
-    },
-    frontTop: {
-        flex: 6,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    frontBottom: {
-        flex: 2,
-        padding: 25,
-        gap: 15,
-    },
     title: {
         fontSize: 28,
         color: "white",
         textAlign: "center",
         marginTop: 15,
         fontFamily: "MontserratAlternates-Bold",
-    },
-    carduserName: {
-        fontSize: 36,
-        color: "white",
-        fontFamily: "MontserratAlternates-Bold",
-    },
-    cardBio: {
-        fontSize: 14,
-        color: "white",
-        fontFamily: "Montserrat-Regular",
-    },
-    tagHolder: {
-        flexDirection: "row",
-        flexWrap: "wrap",
-        gap: 10,
-    },
-    tag: {
-        backgroundColor: "#fff",
-        borderRadius: 20,
-        paddingHorizontal: 15,
-        paddingVertical: 6,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    overlay: {
-        ...StyleSheet.absoluteFillObject,
-        backgroundColor: "rgba(0, 0, 0, 0.25)",
     },
 });

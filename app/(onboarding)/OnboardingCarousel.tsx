@@ -65,7 +65,7 @@ export default function OnboardingCarousel()  {
     }, []);
 
     const handleNext = () => {
-        if (currentIndex < 5) {
+        if (currentIndex < 6) {
             swiperRef.current?.scrollBy(1);
             setCurrentIndex(currentIndex + 1);
         } else {
@@ -132,6 +132,7 @@ export default function OnboardingCarousel()  {
                     favorite_group_1_id: selectedGroups[0] || null,
                     favorite_group_2_id: selectedGroups[1] || null,
                     favorite_group_3_id: selectedGroups[2] || null,
+                    bio: onboardingData.bio,
                     cardfront_url: cardFrontUrl,
                 });
 
@@ -171,7 +172,7 @@ export default function OnboardingCarousel()  {
         ? kpopIdols.filter((idol) =>
               idol.name.toLowerCase().includes(idolSearchQuery.toLowerCase())
           )
-        : kpopIdols.slice(0, 3);
+        : kpopIdols.slice(0, 6);
 
     const filteredGroups = groupSearchQuery
         ? kpopGroups.filter((group) =>
@@ -179,7 +180,7 @@ export default function OnboardingCarousel()  {
           )
         : [
             ...selectedGroups.map((id) => kpopGroups.find((group) => group.id === id)),
-            ...kpopGroups.filter((group) => !selectedGroups.includes(group.id)).slice(0, 3 - selectedGroups.length)
+            ...kpopGroups.filter((group) => !selectedGroups.includes(group.id)).slice(0, 6 - selectedGroups.length)
           ].filter(Boolean);
 
     return (
@@ -234,7 +235,7 @@ export default function OnboardingCarousel()  {
                     <View style={styles.inputWrapper}>
                         <TextInput
                             style={[styles.searchInput, { fontSize: 36, fontFamily: "Montserrat-Bold" }]}
-                            placeholder="Search groups..."
+                            placeholder="Search groups"
                             placeholderTextColor="#1f1f1f"
                             value={groupSearchQuery}
                             onChangeText={setGroupSearchQuery}
@@ -278,7 +279,7 @@ export default function OnboardingCarousel()  {
                         ) : (
                             <TextInput
                                 style={[styles.searchInput, { fontSize: 36, fontFamily: "Montserrat-Bold" }]}
-                                placeholder="..."
+                                placeholder="Search idols"
                                 placeholderTextColor="#1f1f1f"
                                 value={idolSearchQuery}
                                 onChangeText={setIdolSearchQuery}
@@ -320,6 +321,26 @@ export default function OnboardingCarousel()  {
 
                 <View style={styles.slide}>
                     <Text style={styles.onboardingMainBodyText}>
+                        Add your bio
+                    </Text>
+                    <FormField
+                        title="Bio"
+                        value={onboardingData.bio}
+                        placeholder="Type your bio here"
+                        handleChangeText={(e: string) =>
+                            setOnboardingData({ bio: e })
+                        }
+                        keyboardType="default"
+                        customTextStyle={styles.bioTextStyle}
+                        maxLength={150}
+                    />
+                    <Text style={styles.onboardingSubtitle}>
+                        Let others know a bit about you!
+                    </Text>
+                </View>
+
+                <View style={styles.slide}>
+                    <Text style={styles.onboardingMainBodyText}>
                         Welcome to Klipp!
                     </Text>
                 </View>
@@ -327,7 +348,7 @@ export default function OnboardingCarousel()  {
 
             <View style={styles.buttonContainer}>
                 <CustomButton
-                    title={currentIndex < 5 ? "Next" : "Continue"}
+                    title={currentIndex < 6 ? "Next" : "Continue"}
                     containerStyles={styles.button}
                     handlePress={handleNext}
                 />
@@ -468,5 +489,11 @@ const styles = StyleSheet.create({
         color: 'black',
         fontSize: 16,
         fontFamily: "Montserrat-Bold",
+    },
+    bioTextStyle: {
+        fontSize: 24,
+        color: "white",
+        fontFamily: "Montserrat-Regular",
+        textAlignVertical: "top",
     },
 });

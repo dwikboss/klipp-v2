@@ -36,7 +36,7 @@ const scanner = () => {
 
     useEffect(() => {
         shadowOpacity.value = withRepeat(
-            withTiming(0.5, { duration: 1500 }),
+            withTiming(0.5, { duration: 800 }),
             -1,
             true
         );
@@ -56,7 +56,7 @@ const scanner = () => {
                     favorite_group_2_id:kpop_groups!cards_favorite_group_2_id_fkey(fandom_name, associated_color),
                     favorite_group_3_id:kpop_groups!cards_favorite_group_3_id_fkey(fandom_name, associated_color),
                     favorite_idol_id:kpop_idols(name),
-                    profile_id
+                    profiles:profile_id(username, avatar_url)
                 `
                     )
                     .eq("id", data);
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     },
     cardWrapper: {
         transform: [{ scale: 0.95 }],
-        shadowColor: '#FF69B4',
+        shadowColor: '#ffffff',
         shadowOffset: { width: 0, height: 0 },
         shadowRadius: 50,
         elevation: 10,

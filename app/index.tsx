@@ -108,14 +108,6 @@ const Index = () => {
         );
     }
 
-    // if (session) {
-    //     if (!profileUpdatedAt) {
-    //         return <Redirect href="/onboarding1" />;
-    //     } else {
-    //         return <Redirect href="/home" />;
-    //     }
-    // }
-
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.topSection}>

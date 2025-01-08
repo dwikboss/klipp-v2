@@ -5,8 +5,10 @@ import { supabase } from "../../utils/supabase";
 import CardDisplay from "../../components/CardDisplay";
 import CustomButton from "../../components/CustomButton";
 import Animated, { useSharedValue, useAnimatedStyle, withSpring, withDelay, withTiming, withRepeat } from "react-native-reanimated";
+import { useUser } from "../../contexts/UserContext";
 
 const scanner = () => {
+    const { profile } = useUser();
     const [permission, requestPermission] = useCameraPermissions();
     const [scannedCard, setScannedCard] = useState<any>(null);
     const [loading, setLoading] = useState(false);
@@ -36,7 +38,7 @@ const scanner = () => {
 
     useEffect(() => {
         shadowOpacity.value = withRepeat(
-            withTiming(0.5, { duration: 800 }),
+            withTiming(0.75, { duration: 1200 }),
             -1,
             true
         );
@@ -78,7 +80,7 @@ const scanner = () => {
                         );
                     } else if (profileData && profileData.length > 0) {
                         const { username, avatar_url } = profileData[0];
-                        setScannedCard({ ...cardData[0], username, avatar_url });
+                        setScannedCard({ ...cardData[0], username, avatar: avatar_url });
                     }
                 }
             } catch (error) {
@@ -89,7 +91,26 @@ const scanner = () => {
         }
     };
 
-    const handleAddToCollection = () => {
+    const handleAddToCollection = async () => {
+        if (scannedCard && profile?.id) {
+            try {
+                const { error } = await supabase
+                    .from('collected_cards')
+                    .insert({
+                        card_id: scannedCard.id,
+                        user_id: profile.id,
+                        collected_at: new Date().toISOString()
+                    });
+
+                if (error) {
+                    console.error('Error adding card to collection:', error);
+                }
+            } catch (error) {
+                console.error('Unexpected error adding card:', error);
+            }
+        }
+        
+        // Reset the scanner state regardless of the insert result
         setScannedCard(null);
         setIsScannerActive(true);
         translateY.value = windowHeight;
@@ -204,10 +225,10 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     cardWrapper: {
-        transform: [{ scale: 0.95 }],
-        shadowColor: '#ffffff',
+        transform: [{ scale: 0.98 }],
+        shadowColor: '#8a8a8a',
         shadowOffset: { width: 0, height: 0 },
-        shadowRadius: 50,
+        shadowRadius: 75,
         elevation: 10,
     },
     modalText: {

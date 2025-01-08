@@ -137,6 +137,7 @@ const CardDisplay: React.FC<CardDisplayProps> = ({ cardData }) => {
             renderBack={renderBack}
         />
     );
+    
 };
 
 const styles = StyleSheet.create({
